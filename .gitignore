@@ -1,0 +1,7 @@
+# Root-level git ignore
+
+### GitHub Copilot instructions (may contain internal guidelines) ###
+.github/copilot-instructions.md
+
+### Secrets — never commit credentials ###
+**/firebase-service-account.json

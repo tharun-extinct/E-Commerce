@@ -74,7 +74,7 @@ public class OrderService {
 
         // Create Razorpay order
         JSONObject rzpOrderRequest = new JSONObject();
-        rzpOrderRequest.put("amount", grandTotal.multiply(BigDecimal.valueOf(100)).intValue()); // Razorpay expects paise
+        rzpOrderRequest.put("amount", grandTotal.multiply(BigDecimal.valueOf(100)).longValue()); // Razorpay expects paise
         rzpOrderRequest.put("currency", "INR");
         rzpOrderRequest.put("receipt", orderNumber);
 

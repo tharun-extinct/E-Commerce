@@ -13,8 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,6 +39,8 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final UserRepository userRepository;
+    private final SecurityContextRepository securityContextRepository =
+            new HttpSessionSecurityContextRepository();
 
     public FirebaseTokenFilter(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -77,7 +82,13 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(user, null, authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                // Persist SecurityContext to HTTP session (Redis-backed) so
+                // subsequent requests use JSESSIONID without re-verifying the token
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                context.setAuthentication(authentication);
+                SecurityContextHolder.setContext(context);
+                securityContextRepository.saveContext(context, request, response);
+
                 log.debug("Authenticated user: {} ({})", user.getDisplayName(), uid);
             }
         } catch (FirebaseAuthException e) {

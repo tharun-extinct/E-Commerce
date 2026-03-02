@@ -1,5 +1,6 @@
 package com.freshgreens.app.service;
 
+import com.freshgreens.app.dto.PageResponse;
 import com.freshgreens.app.dto.ProductRequest;
 import com.freshgreens.app.dto.ProductResponse;
 import com.freshgreens.app.model.Category;
@@ -7,6 +8,7 @@ import com.freshgreens.app.model.Product;
 import com.freshgreens.app.model.User;
 import com.freshgreens.app.repository.CategoryRepository;
 import com.freshgreens.app.repository.ProductRepository;
+import com.freshgreens.app.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,29 +28,34 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     public ProductService(ProductRepository productRepository,
-                          CategoryRepository categoryRepository) {
+                          CategoryRepository categoryRepository,
+                          UserRepository userRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
     @Cacheable(value = "products", key = "'page:' + #page + ':size:' + #size")
     @Transactional(readOnly = true)
-    public Page<ProductResponse> getActiveProducts(int page, int size) {
+    public PageResponse<ProductResponse> getActiveProducts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return productRepository
+        Page<ProductResponse> result = productRepository
                 .findByStatusOrderByCreatedAtDesc(Product.Status.ACTIVE, pageable)
                 .map(this::toResponse);
+        return toPageResponse(result);
     }
 
     @Cacheable(value = "products", key = "'cat:' + #categoryId + ':page:' + #page")
     @Transactional(readOnly = true)
-    public Page<ProductResponse> getProductsByCategory(Long categoryId, int page, int size) {
+    public PageResponse<ProductResponse> getProductsByCategory(Long categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return productRepository
+        Page<ProductResponse> result = productRepository
                 .findByCategoryIdAndStatus(categoryId, Product.Status.ACTIVE, pageable)
                 .map(this::toResponse);
+        return toPageResponse(result);
     }
 
     @Cacheable(value = "product-detail", key = "#id")
@@ -60,25 +67,28 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductResponse> searchProducts(String query, String city, String pincode,
+    public PageResponse<ProductResponse> searchProducts(String query, String city, String pincode,
                                                  int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
+        Page<ProductResponse> result;
         if (query != null && !query.isBlank() && city != null && !city.isBlank()) {
-            return productRepository
+            result = productRepository
                     .searchByQueryAndLocation(query, city, pincode != null ? pincode : "", Product.Status.ACTIVE, pageable)
                     .map(this::toResponse);
         } else if (query != null && !query.isBlank()) {
-            return productRepository
+            result = productRepository
                     .searchByQuery(query, Product.Status.ACTIVE, pageable)
                     .map(this::toResponse);
         } else if (city != null && !city.isBlank()) {
-            return productRepository
+            result = productRepository
                     .findByLocation(city, pincode != null ? pincode : "", Product.Status.ACTIVE, pageable)
                     .map(this::toResponse);
+        } else {
+            return getActiveProducts(page, size);
         }
 
-        return getActiveProducts(page, size);
+        return toPageResponse(result);
     }
 
     @CacheEvict(value = {"products", "product-detail"}, allEntries = true)
@@ -108,6 +118,7 @@ public class ProductService {
         // Update seller role to SELLER if currently BUYER
         if (seller.getRole() == User.Role.BUYER) {
             seller.setRole(User.Role.SELLER);
+            userRepository.save(seller);
         }
 
         return toResponse(product);
@@ -153,6 +164,18 @@ public class ProductService {
                 .sellerId(product.getSeller().getId())
                 .status(product.getStatus().name())
                 .createdAt(product.getCreatedAt() != null ? product.getCreatedAt().toString() : null)
+                .build();
+    }
+
+    private PageResponse<ProductResponse> toPageResponse(Page<ProductResponse> page) {
+        return PageResponse.<ProductResponse>builder()
+                .content(page.getContent())
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .first(page.isFirst())
                 .build();
     }
 }

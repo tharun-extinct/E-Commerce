@@ -43,7 +43,9 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .maximumSessions(3)
+                .sessionConcurrency(concurrency -> concurrency
+                    .maximumSessions(3)
+                )
             )
             .authorizeHttpRequests(auth -> auth
                 // Static resources — public
