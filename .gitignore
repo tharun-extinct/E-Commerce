@@ -46,3 +46,9 @@ firebase-service-account.json
 .env
 app/.env
 *.env
+
+
+error.txt
+gcp.txt
+
+ref
