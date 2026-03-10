@@ -1,13 +1,12 @@
-# ─────────────────────────────────────────────────────────────────────────────
 # Fresh Greens — Multi-stage Dockerfile
 #
 # Stage 1 (build)  : compiles the Spring Boot JAR using Maven wrapper
 # Stage 2 (runtime): copies only the JAR into a slim JRE image
 #
 # The final image is ~200 MB instead of ~500 MB (no JDK / build tools).
-# ─────────────────────────────────────────────────────────────────────────────
 
-# ── Stage 1: Build ─────────────────────────────────────────────────────────────
+
+# ── Stage 1: Build ───────────────────────────────────────────────────────────────────────────────
 FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /workspace
 
@@ -21,7 +20,8 @@ RUN chmod +x mvnw && ./mvnw dependency:go-offline --batch-mode --no-transfer-pro
 COPY src src
 RUN ./mvnw package -DskipTests --batch-mode --no-transfer-progress
 
-# ── Stage 2: Runtime ───────────────────────────────────────────────────────────
+
+# ── Stage 2: Runtime ──────────────────────────────────────────────────────────────────────────────
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
@@ -35,4 +35,6 @@ COPY --from=build /workspace/target/*.jar app.jar
 # Cloud Run injects PORT; application.properties reads ${PORT:8080}
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Cap heap at 75% of the container's memory limit (-XX:MaxRAMPercentage).
+# On a 512Mi Cloud Run instance that leaves ~128Mi for OS + metaspace.
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0", "-jar", "app.jar"]
