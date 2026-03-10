@@ -22,21 +22,21 @@ jobs:
 
     steps:
 
-      # ── 1. Checkout ────────────────────────────────────────────────────────────────
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Authenticate to Google Cloud ─────────────────────────────────────────
+      # ── 2. Authenticate to Google Cloud ─────────────────────────────────────
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      # ── 3. Set up Cloud SDK ────────────────────────────────────────────────────
+      # ── 3. Set up Cloud SDK ──────────────────────────────────────────────────
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      # ── 4. Authorise Docker to push to Artifact Registry ────────────────────────
+      # ── 4. Authorise Docker to push to Artifact Registry ────────────────────
       - name: Configure Docker for Artifact Registry
         run: |
           gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
@@ -48,7 +48,7 @@ jobs:
         run: |
           echo "$FIREBASE_SA" > app/src/main/resources/firebase-service-account.json
 
-      # ── 6. Build & push Docker image ─────────────────────────────────────────────
+      # ── 6. Build & push Docker image ─────────────────────────────────────────
       #       Tag with git SHA for traceability + overwrite 'latest' for Cloud Run
       - name: Build and push Docker image
         working-directory: app
@@ -79,10 +79,9 @@ jobs:
             --set-secrets="DB_PASSWORD=DB_PASSWORD:latest" \
             --set-secrets="RAZORPAY_KEY_ID=RAZORPAY_KEY_ID:latest" \
             --set-secrets="RAZORPAY_KEY_SECRET=RAZORPAY_KEY_SECRET:latest" \
-            --set-secrets="RAZORPAY_WEBHOOK_SECRET=RAZORPAY_WEBHOOK_SECRET:latest" \
             --set-secrets="/app/firebase-service-account.json=FIREBASE_SERVICE_ACCOUNT_JSON:latest"
 
-      # ── 8. Print the live URL ──────────────────────────────────────────────────
+      # ── 8. Print the live URL ────────────────────────────────────────────────
       - name: Print deployed URL
         run: |
           echo "✅ Deployment complete!"
