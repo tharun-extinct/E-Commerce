@@ -1,4 +1,3 @@
-# ─────────────────────────────────────────────────────────────────────────────
 # Fresh Greens — CD (Continuous Deployment) Workflow
 #
 # Triggers ONLY on direct pushes / merges to main.
@@ -8,7 +7,9 @@
 #   GCP_PROJECT_ID   → your GCP project ID  (e.g. fresh-greens-prod-123456)
 #   GCP_SA_KEY       → full JSON of the github-deployer service account key
 #   GCP_REGION       → GCP region           (e.g. asia-south1)
-# ─────────────────────────────────────────────────────────────────────────────
+
+
+
 name: Deploy to Cloud Run
 
 on:
@@ -79,7 +80,8 @@ jobs:
             --set-secrets="DB_PASSWORD=DB_PASSWORD:latest" \
             --set-secrets="RAZORPAY_KEY_ID=RAZORPAY_KEY_ID:latest" \
             --set-secrets="RAZORPAY_KEY_SECRET=RAZORPAY_KEY_SECRET:latest" \
-            --set-secrets="/app/firebase-service-account.json=FIREBASE_SERVICE_ACCOUNT_JSON:latest"
+            --set-env-vars="APP_FIREBASE_CONFIG_PATH=/secrets/firebase-service-account.json" \
+            --set-secrets="/secrets/firebase-service-account.json=FIREBASE_SERVICE_ACCOUNT_JSON:latest"
 
       # ── 8. Print the live URL ────────────────────────────────────────────────
       - name: Print deployed URL
