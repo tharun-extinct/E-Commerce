@@ -87,8 +87,10 @@ public class UserController {
         try {
             userService.savePhoneForVerification(user.getId(), phone);
             twilioVerifyService.startSmsVerification(phone);
-        } catch (IllegalStateException ex) {
+        } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(503).body(ApiResponse.error(ex.getMessage()));
         }
 
         return ResponseEntity.ok(ApiResponse.success("OTP sent to your phone", null));
@@ -122,8 +124,10 @@ public class UserController {
                 return ResponseEntity.badRequest().body(ApiResponse.error("Invalid or expired OTP"));
             }
             userService.verifyPhone(user.getId(), phone);
-        } catch (IllegalStateException ex) {
+        } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(503).body(ApiResponse.error(ex.getMessage()));
         }
 
         return ResponseEntity.ok(ApiResponse.success("Phone verified", null));
@@ -134,18 +138,30 @@ public class UserController {
             return null;
         }
 
-        String digitsAndPlus = rawPhone.trim().replaceAll("[^\\d+]", "");
-        if (digitsAndPlus.isBlank()) {
+        String candidate = rawPhone.trim();
+        if (candidate.isBlank()) {
+            return null;
+        }
+
+        // Convert leading international dial prefix "00" to '+'
+        if (candidate.startsWith("00")) {
+            candidate = "+" + candidate.substring(2);
+        }
+
+        // Keep a single leading '+' (if present) and strip all other non-digits
+        boolean hasLeadingPlus = candidate.startsWith("+");
+        String digitsOnly = candidate.replaceAll("\\D", "");
+        if (digitsOnly.isBlank()) {
             return null;
         }
 
         String normalized;
-        if (digitsAndPlus.startsWith("+")) {
-            normalized = digitsAndPlus;
-        } else if (digitsAndPlus.length() == 10) {
-            normalized = "+91" + digitsAndPlus;
+        if (hasLeadingPlus) {
+            normalized = "+" + digitsOnly;
+        } else if (digitsOnly.length() == 10) {
+            normalized = "+91" + digitsOnly;
         } else {
-            normalized = "+" + digitsAndPlus;
+            normalized = "+" + digitsOnly;
         }
 
         if (!normalized.matches("^\\+[1-9]\\d{7,14}$")) {

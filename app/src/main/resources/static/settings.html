@@ -117,7 +117,7 @@
                     const u = res.data;
                     $('#displayName').val(u.displayName);
                     $('#emailInput').val(u.email);
-                    $('#phoneInput').val(u.phone);
+                    $('#phoneInput').val(_toLocalPhoneDigits(u.phone));
                     $('#settingsCity').val(u.city);
                     $('#settingsPincode').val(u.pincode);
 
@@ -139,13 +139,13 @@
 
             // Send OTP
             $('#sendPhoneOtpBtn').on('click', function () {
-                const phone = $('#phoneInput').val().trim();
-                if (!phone || phone.length < 10) {
+                const phoneDigits = _toLocalPhoneDigits($('#phoneInput').val());
+                if (!/^\d{10}$/.test(phoneDigits)) {
                     FGToast.show('Enter a valid 10-digit phone number.', 'warning');
                     return;
                 }
 
-                FGApi.post('/api/users/send-phone-otp', { phone: '+91' + phone })
+                FGApi.post('/api/users/send-phone-otp', { phone: '+91' + phoneDigits })
                     .then(function (res) {
                         if (res.success) {
                             FGToast.show('OTP sent to your phone.', 'success');
@@ -156,10 +156,10 @@
 
             // Verify phone with OTP
             $('#verifyPhoneBtn').on('click', function () {
-                const phone = $('#phoneInput').val().trim();
+                const phoneDigits = _toLocalPhoneDigits($('#phoneInput').val());
                 const otpCode = $('#phoneOtpInput').val().trim();
 
-                if (!phone || phone.length < 10) {
+                if (!/^\d{10}$/.test(phoneDigits)) {
                     FGToast.show('Enter a valid 10-digit phone number.', 'warning');
                     return;
                 }
@@ -168,7 +168,7 @@
                     return;
                 }
 
-                FGApi.post('/api/users/verify-phone', { phone: '+91' + phone, otpCode: otpCode })
+                FGApi.post('/api/users/verify-phone', { phone: '+91' + phoneDigits, otpCode: otpCode })
                     .then(function (res) {
                         if (res.success) {
                             FGToast.show('Phone verified successfully!', 'success');
@@ -193,6 +193,21 @@
                     $(selector).addClass('unverified').removeClass('verified')
                         .html('<i class="bi bi-exclamation-circle"></i> Unverified');
                 }
+            }
+
+            function _toLocalPhoneDigits(rawPhone) {
+                const digits = String(rawPhone || '').replace(/\D/g, '');
+                if (!digits) return '';
+
+                // Convert stored E.164 (+91XXXXXXXXXX) to local 10-digit view
+                if (digits.length === 12 && digits.startsWith('91')) {
+                    return digits.slice(2);
+                }
+                // If extra digits exist, keep the last 10 for local input field
+                if (digits.length > 10) {
+                    return digits.slice(-10);
+                }
+                return digits;
             }
         });
     </script>
