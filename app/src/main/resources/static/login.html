@@ -93,8 +93,8 @@
                 _setLoading(true);
                 FGAuth.signInWithGoogle()
                     .then(function () {
-                        // Popup success triggers fg:auth:session_created.
-                        // Redirect fallback navigates away and returns later.
+                        // Popup flow redirects via fg:auth:session_created.
+                        // Redirect fallback navigates away and returns to complete sign-in.
                     })
                     .catch(function (err) {
                         _setLoading(false);
@@ -110,8 +110,8 @@
                 _setLoading(true);
                 FGAuth.signInWithGitHub()
                     .then(function () {
-                        // Popup success triggers fg:auth:session_created.
-                        // Redirect fallback navigates away and returns later.
+                        // Popup flow redirects via fg:auth:session_created.
+                        // Redirect fallback navigates away and returns to complete sign-in.
                     })
                     .catch(function (err) {
                         _setLoading(false);

@@ -79,8 +79,7 @@ public class AuthController {
                     .body(ApiResponse.error("Invalid Firebase token: " + e.getMessage()));
         } catch (IllegalArgumentException e) {
             log.warn("Auth request rejected: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         } catch (IllegalStateException e) {
             log.error("Auth service unavailable: {}", e.getMessage());
             return ResponseEntity.status(503)
