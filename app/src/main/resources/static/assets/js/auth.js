@@ -31,7 +31,6 @@ const FGAuth = (function () {
         firebase.initializeApp(firebaseConfig);
         _initialized = true;
 
-        // Complete OAuth redirect flow if popup fallback was used
         _handleRedirectResult();
 
         // Listen for auth state changes
@@ -73,8 +72,6 @@ const FGAuth = (function () {
         return _signInWithPopup(provider)
             .catch(function (err) {
                 if (_shouldFallbackToRedirect(err)) {
-                    // Popup flows can fail because of browser COOP/popup restrictions.
-                    // Redirect flow avoids cross-window access issues.
                     sessionStorage.setItem('fg_auth_redirect_pending', '1');
                     return firebase.auth().signInWithRedirect(provider);
                 }
@@ -101,9 +98,11 @@ const FGAuth = (function () {
                 if (pendingRedirect) {
                     sessionStorage.removeItem('fg_auth_redirect_pending');
                 }
+
                 if (!result || !result.user) {
                     return;
                 }
+
                 return result.user.getIdToken()
                     .then(function (idToken) {
                         return _loginToBackend(idToken);
@@ -124,7 +123,7 @@ const FGAuth = (function () {
 
         return code === 'auth/popup-blocked' ||
                code === 'auth/cancelled-popup-request' ||
-             code === 'auth/popup-closed-by-user' ||
+               code === 'auth/popup-closed-by-user' ||
                message.includes('cross-origin-opener-policy') ||
                message.includes('window.closed');
     }
