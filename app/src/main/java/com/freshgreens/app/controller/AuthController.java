@@ -27,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
+//import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class AuthController {
      * Receives Firebase ID token, verifies it, creates/upserts user,
      * and establishes a Spring Security session so @AuthenticationPrincipal works.
      */
+    //@Tag(name="get", description="GET methods of Employee API")
     @PostMapping("/login")
         @Operation(summary = "Login with Firebase token", description = "Verifies Firebase ID token and creates authenticated server session (JSESSIONID).")
         @ApiResponses(value = {
@@ -129,6 +131,7 @@ public class AuthController {
      * GET /api/auth/session
      * Check if user has an active authenticated session.
      */
+    
     @GetMapping("/session")
     @Operation(summary = "Check active session", description = "Returns logged-in user details for active session cookie.")
     public ResponseEntity<ApiResponse<AuthResponse>> checkSession() {
