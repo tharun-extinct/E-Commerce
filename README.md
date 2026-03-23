@@ -92,3 +92,12 @@ App URL: `http://localhost:8080`
 - Admin: `/api/admin/*`
 
 
+
+
+
+
+where are all the dependcies(AKA JAR file) in the POM.xml is stored in the Project folder?
+
+
+
+How does the `AppApplication.java` runs the combines and runs the modules as a application without any imports ? 
