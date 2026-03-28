@@ -3,6 +3,10 @@
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
+
+### Machine-specific JVM args (SSL truststore, proxy) — never commit ###
+**/jvm.config
+
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -54,9 +58,6 @@ gcp.txt
 ref
 
 application-local.properties
-
-agent/
-
 
 
 **/agents/**

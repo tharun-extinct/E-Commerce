@@ -13,10 +13,13 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.KeyStore;
 import java.time.Duration;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 @Service
 public class TwilioVerifyService {
@@ -116,6 +119,14 @@ public class TwilioVerifyService {
         HttpClient.Builder builder = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofMillis(connectTimeoutMs));
 
+        // On Windows (Cognizant/Zscaler), Java's default cacerts doesn't have the
+        // corporate CA certs. Load the Windows-ROOT cert store so the HttpClient
+        // trusts the same CAs that curl/browsers use. Gracefully ignored on Linux.
+        SSLContext corporateSsl = buildWindowsTrustingSslContext();
+        if (corporateSsl != null) {
+            builder.sslContext(corporateSsl);
+        }
+
         if (!isBlank(proxyHost) && proxyPort > 0) {
             builder.proxy(ProxySelector.of(new InetSocketAddress(proxyHost.trim(), proxyPort)));
             log.info("Twilio HTTP client proxy enabled from properties: {}:{}", proxyHost.trim(), proxyPort);
@@ -150,6 +161,32 @@ public class TwilioVerifyService {
         }
 
         return builder.build();
+    }
+
+    /**
+     * Build an SSLContext that trusts the Windows certificate store (Windows-ROOT).
+     * This allows the HttpClient to trust Zscaler / corporate CA certificates that
+     * Cognizant IT installs via Group Policy — the same certs that curl.exe trusts.
+     * Returns null on non-Windows platforms or if the store is unavailable.
+     */
+    private SSLContext buildWindowsTrustingSslContext() {
+        try {
+            KeyStore windowsStore = KeyStore.getInstance("Windows-ROOT");
+            windowsStore.load(null, null);
+
+            TrustManagerFactory tmf = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(windowsStore);
+
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(null, tmf.getTrustManagers(), null);
+            log.info("Twilio HTTP client using Windows-ROOT cert store ({} certs)", windowsStore.size());
+            return ctx;
+        } catch (Exception e) {
+            // Non-Windows (Linux/Cloud Run) — fall through to default JVM truststore
+            log.debug("Windows-ROOT cert store not available (expected on Linux): {}", e.getMessage());
+            return null;
+        }
     }
 
     private void ensureConfigured() {
