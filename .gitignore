@@ -55,6 +55,9 @@ ref
 
 application-local.properties
 
+agent/
+
+
 
 **/agents/**
 **/skill/**
