@@ -7,6 +7,7 @@ const required = (key: keyof ImportMetaEnv): string | null => {
 
 export const env = {
   apiBaseUrl: required('VITE_API_BASE_URL') || '',
+  adminAppUrl: read('VITE_ADMIN_APP_URL') || '',
   firebase: {
     apiKey: required('VITE_FIREBASE_API_KEY'),
     authDomain: required('VITE_FIREBASE_AUTH_DOMAIN'),

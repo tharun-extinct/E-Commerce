@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Search, ShoppingCart, User, MapPin, LogOut, Shield } from 'lucide-react'
 import { useAuth } from '../../context/auth-context'
 import { useLocation } from '../../context/location-context'
+import { env } from '../../config/env'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 
@@ -50,6 +51,15 @@ export const AppHeader = () => {
   const onAutoDetect = async () => {
     await autoDetectLocation()
     setIsLocationModalOpen(false)
+  }
+
+  const openAdminPortal = () => {
+    const adminUrl = env.adminAppUrl
+    if (!adminUrl) {
+      navigate('/login')
+      return
+    }
+    window.location.assign(adminUrl)
   }
 
   return (
@@ -104,7 +114,7 @@ export const AppHeader = () => {
             {isAuthenticated ? (
               <>
                 {user?.role === 'ADMIN' && (
-                  <Button variant="outline" size="sm" className="border-white/30 bg-white/10 text-white hover:bg-white/20" onClick={() => navigate('/admin')}>
+                  <Button variant="outline" size="sm" className="border-white/30 bg-white/10 text-white hover:bg-white/20" onClick={openAdminPortal}>
                     <Shield className="mr-1 h-4 w-4" />
                     Admin
                   </Button>
