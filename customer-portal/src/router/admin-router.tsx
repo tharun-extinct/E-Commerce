@@ -27,7 +27,7 @@ export const adminRouter = createBrowserRouter([
     element: <AppShell />,
     children: [
       { index: true, element: <RequireAuth><RequireAdmin><AdminPage /></RequireAdmin></RequireAuth> },
-      { path: 'login', element: <LoginPage /> },
+      { path: 'login', element: <LoginPage requireAdmin /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

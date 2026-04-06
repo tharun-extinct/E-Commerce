@@ -63,6 +63,7 @@ application-local.properties
 **/agents/**
 **/skill/**
 **/prompts/**
+**/node_modules/**
 
 
 *.svg
