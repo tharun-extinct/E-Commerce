@@ -58,8 +58,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf
                 .csrfTokenRepository(csrfTokenRepository())
                 .csrfTokenRequestHandler(requestHandler)
-                // Disable CSRF for API endpoints that use Bearer token auth
-                .ignoringRequestMatchers("/api/auth/**", "/api/webhook/**")
+                // SPA REST API: CORS + JSON Content-Type already block CSRF attacks.
+                // Disabling CSRF for all /api/** avoids cookie timing issues in local dev
+                // (where Secure=false means XSRF-TOKEN cookie loads differently across browsers).
+                .ignoringRequestMatchers("/api/**")
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

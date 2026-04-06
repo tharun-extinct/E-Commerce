@@ -1,4 +1,4 @@
-package com.freshgreens.app.controller;
+package main.java.com.freshgreens.app.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;

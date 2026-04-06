@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { ShieldCheck, Users, Package, Boxes, IndianRupee, ArrowLeft, Phone, PhoneOff, Mail, MailCheck } from 'lucide-react'
+import { Users, Package, Boxes, IndianRupee, ArrowLeft, Phone, PhoneOff, Mail, MailCheck } from 'lucide-react'
+import { AdminLogin } from './admin-login'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { toast, Toaster } from 'sonner'
 import { api } from '@shared/lib/api'
@@ -12,18 +13,19 @@ type AdminTab = 'users' | 'products' | 'orders'
 
 const PAGE_SIZE = 15
 const customerPortalUrl = (import.meta.env.VITE_CUSTOMER_APP_URL || 'http://localhost:5173').trim()
-const adminLoginUrl = (import.meta.env.VITE_ADMIN_LOGIN_URL || `${customerPortalUrl}/login`).trim()
 
 const openExternal = (url: string) => {
 	try {
-		if (window.top !== window) {
-			window.open(url, '_blank', 'noopener,noreferrer')
-			return
-		}
+		const opened = window.open(url, '_blank', 'noopener,noreferrer')
+		if (opened) return
 
-		window.location.href = url
+		const link = document.createElement('a')
+		link.href = url
+		link.target = '_blank'
+		link.rel = 'noopener noreferrer'
+		link.click()
 	} catch {
-		window.open(url, '_blank', 'noopener,noreferrer')
+		toast.error(`Unable to open ${url}. Please open it manually.`)
 	}
 }
 
@@ -608,23 +610,7 @@ const AdminConsoleGate = () => {
 	}
 
 	if (session.status !== 'authenticated' || !session.user) {
-		return (
-			<main className="flex min-h-screen items-center justify-center bg-background p-4">
-				<div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-sm">
-					<div className="mb-4 text-center">
-						<ShieldCheck className="mx-auto mb-2 h-8 w-8 text-brand-600" />
-						<h1 className="text-xl font-bold">Admin Console Login</h1>
-						<p className="text-sm text-muted-foreground">Sign in through customer portal, then return to admin console.</p>
-					</div>
-					<div className="space-y-2">
-						<button className="admin-login-btn" onClick={() => openExternal(adminLoginUrl)}>
-							Open Login Page
-						</button>
-						<button className="admin-login-btn admin-login-btn-dark" onClick={() => void refresh()}>I already signed in</button>
-					</div>
-				</div>
-			</main>
-		)
+		return <AdminLogin onSuccess={() => void refresh()} />
 	}
 
 	if (session.user.role !== 'ADMIN') {

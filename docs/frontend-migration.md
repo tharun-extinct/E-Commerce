@@ -530,3 +530,24 @@ If you want, I can next add:
 
 
 
+implement spring cloud gateway
+
+---
+
+
+all the api request/ response should be routed through the Spring cloud api gateway
+
+
+---
+
+admin-console -> gateway -> server
+
+---
+
+customer-portal -> gateway -> server
+
+
+---
+
+
+tell me whether this project architecture is industry standard and scalable?

@@ -3,6 +3,8 @@
 Fresh Greens is a B2C e-commerce platform for fresh produce, built with Spring Boot.
 It supports customer/admin journeys, Firebase-based authentication, cart + checkout, and Razorpay payments.
 
+All frontend API traffic is routed through Spring Cloud Gateway.
+
 ## Valid Frontend Applications
 
 Only these frontend applications are valid in this project:
@@ -14,6 +16,10 @@ Only these frontend applications are valid in this project:
 
 ```mermaid
 flowchart LR
+	U1[customer-portal] --> GATEWAY[Spring Cloud Gateway :8080]
+	U2[admin-console] --> GATEWAY
+	GATEWAY --> APP[Spring Boot API server :8081]
+
 	A[Guest/Buyer] --> B[Firebase Login]
 	B --> C[Browse Products]
 	C --> D[Add to Cart]
@@ -37,6 +43,7 @@ flowchart LR
 ## Tech Stack
 
 - Java 17, Spring Boot
+- Spring Cloud Gateway
 - Spring Security, Spring Data JPA, MySQL
 - Firebase Admin SDK
 - Razorpay Java SDK
@@ -45,15 +52,16 @@ flowchart LR
 
 ## Project Structure
 
-- app/src/main/java/com/freshgreens/app/config → security, firebase, cache, redis, razorpay
-- app/src/main/java/com/freshgreens/app/controller → auth/cart/product/order/user/admin/webhook APIs
-- app/src/main/java/com/freshgreens/app/dto → request/response contracts
-- app/src/main/java/com/freshgreens/app/service → business logic
-- app/src/main/java/com/freshgreens/app/repository → data access
-- app/src/main/java/com/freshgreens/app/model → entities
+- server/src/main/java/com/freshgreens/app/config → security, firebase, cache, redis, razorpay
+- server/src/main/java/com/freshgreens/app/controller → auth/cart/product/order/user/admin/webhook APIs
+- server/src/main/java/com/freshgreens/app/dto → request/response contracts
+- server/src/main/java/com/freshgreens/app/service → business logic
+- server/src/main/java/com/freshgreens/app/repository → data access
+- server/src/main/java/com/freshgreens/app/model → entities
+- gateway/src/main/java/com/freshgreens/gateway → Spring Cloud API gateway
 - customer-portal → customer-facing React web app
 - admin-console → admin-facing React web app
-- app/src/main/resources/static → frontend pages/assets
+- server/src/main/resources/static → frontend pages/assets
 - .mermaid → architecture/flow diagrams
 
 ## Run Locally
@@ -77,9 +85,9 @@ Set the following values (system env or `.env`-style injection):
 - `RAZORPAY_WEBHOOK_SECRET` (optional)
 - `APP_FIREBASE_CONFIG_PATH` (defaults to `firebase-service-account.json`)
 
-### 3) Start application
+### 3) Start backend server (port 8081)
 
-From the app folder:
+From the server folder:
 
 - Windows: `mvnw.cmd spring-boot:run`
 - macOS/Linux: `./mvnw spring-boot:run`
@@ -87,7 +95,16 @@ From the app folder:
 - Activate with (PowerShell):   `$env:SPRING_PROFILES_ACTIVE='local'; .\mvnw.cmd spring-boot:run`
 - Activate with (bash):         `SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run`
 
-App URL: `http://localhost:8080`
+Server URL: `http://localhost:8081`
+
+### 4) Start API gateway (port 8080)
+
+From the gateway folder:
+
+- Windows: `mvnw.cmd spring-boot:run` (if wrapper exists), or `mvn spring-boot:run`
+- macOS/Linux: `./mvnw spring-boot:run` (if wrapper exists), or `mvn spring-boot:run`
+
+Gateway URL (frontend API target): `http://localhost:8080`
 
 ## Useful Endpoints
 
