@@ -1,7 +1,8 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+﻿import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { MapPin, Phone, Lock } from 'lucide-react'
 import { api } from '../lib/api'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
@@ -35,7 +36,6 @@ declare global {
 
 const loadRazorpayScript = async () => {
   if (window.Razorpay) return
-
   await new Promise<void>((resolve, reject) => {
     const script = document.createElement('script')
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
@@ -48,12 +48,15 @@ const loadRazorpayScript = async () => {
 export const CheckoutPage = () => {
   const navigate = useNavigate()
   const cartQuery = useQuery({ queryKey: ['cart'], queryFn: api.getCart })
+  const userQuery = useQuery({ queryKey: ['me'], queryFn: api.getCurrentUser })
   const [form, setForm] = useState({ deliveryAddress: '', city: '', pincode: '' })
+
+  const cart = cartQuery.data
+  const user = userQuery.data
 
   const checkoutMutation = useMutation({
     mutationFn: async () => {
       await loadRazorpayScript()
-
       const order = await api.createOrder(form)
       const key = await api.getRazorpayKey()
 
@@ -70,7 +73,7 @@ export const CheckoutPage = () => {
             razorpayPaymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature,
           })
-          toast.success('Payment verified. Order placed.')
+          toast.success('ðŸŽ‰ Payment successful! Order placed.')
           navigate('/orders')
         },
       }
@@ -78,54 +81,119 @@ export const CheckoutPage = () => {
       const razorpay = new window.Razorpay(options)
       razorpay.open()
     },
-    onError: () => toast.error('Checkout failed. Verify address and phone verification status.'),
+    onError: () => toast.error('Checkout failed. Please verify your address and phone verification status.'),
   })
 
-  return (
-    <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-      <Card className="border-none shadow-[var(--fg-shadow)]">
-        <CardHeader>
-          <CardTitle>Delivery Address</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <textarea
-            className="min-h-28 w-full rounded-xl border border-border bg-white p-3 text-sm"
-            placeholder="Address"
-            value={form.deliveryAddress}
-            onChange={(event) => setForm((prev) => ({ ...prev, deliveryAddress: event.target.value }))}
-          />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Input
-              placeholder="City"
-              value={form.city}
-              onChange={(event) => setForm((prev) => ({ ...prev, city: event.target.value }))}
-            />
-            <Input
-              placeholder="Pincode"
-              value={form.pincode}
-              onChange={(event) => setForm((prev) => ({ ...prev, pincode: event.target.value }))}
-            />
-          </div>
-          <Button
-            className="btn-accent"
-            onClick={() => checkoutMutation.mutate()}
-            disabled={!form.deliveryAddress || !form.city || !form.pincode || checkoutMutation.isPending}
-          >
-            Pay with Razorpay
-          </Button>
-        </CardContent>
-      </Card>
+  const isFormValid = form.deliveryAddress.trim() && form.city.trim() && form.pincode.trim().length === 6
 
-      <Card className="h-fit border-none shadow-[var(--fg-shadow)]">
-        <CardHeader>
-          <CardTitle>Summary</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">Items: {cartQuery.data?.totalItems ?? 0}</p>
-          <p className="text-lg font-semibold">Total: ₹{cartQuery.data?.totalAmount ?? 0}</p>
-          <p className="text-xs text-muted-foreground">Phone verification is required before payment completion.</p>
-        </CardContent>
-      </Card>
+  return (
+    <div className="space-y-2">
+      <h1 className="section-title">Checkout</h1>
+
+      <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
+        {/* Delivery Address form */}
+        <Card className="border-none shadow-[var(--fg-shadow)]">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-[var(--fg-accent)]" />
+              Delivery Address
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Full Address *</label>
+              <textarea
+                className="min-h-28 w-full rounded-xl border border-border bg-white p-3 text-sm transition focus:border-brand-700 focus:outline-none focus:ring-1 focus:ring-brand-700"
+                placeholder="House / Flat no., Street, Landmarkâ€¦"
+                value={form.deliveryAddress}
+                onChange={(e) => setForm((prev) => ({ ...prev, deliveryAddress: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">City *</label>
+                <Input
+                  placeholder="e.g., Chennai"
+                  value={form.city}
+                  onChange={(e) => setForm((prev) => ({ ...prev, city: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pincode *</label>
+                <Input
+                  placeholder="6-digit pincode"
+                  maxLength={6}
+                  value={form.pincode}
+                  onChange={(e) => setForm((prev) => ({ ...prev, pincode: e.target.value.replace(/[^\d]/g, '').slice(0, 6) }))}
+                />
+              </div>
+            </div>
+
+            {/* Phone verification notice */}
+            {user && !user.phoneVerified && (
+              <div className="flex items-start gap-2 rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-700">
+                <Phone className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>
+                  Phone number not verified. Please{' '}
+                  <button type="button" className="font-semibold underline" onClick={() => navigate('/settings')}>
+                    verify your phone
+                  </button>{' '}
+                  before placing an order.
+                </span>
+              </div>
+            )}
+
+            <Button
+              className="btn-accent w-full"
+              size="lg"
+              onClick={() => checkoutMutation.mutate()}
+              disabled={!isFormValid || checkoutMutation.isPending}
+            >
+              <Lock className="mr-1.5 h-4 w-4" />
+              {checkoutMutation.isPending ? 'Processingâ€¦' : 'Pay with Razorpay'}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Order summary */}
+        <div className="space-y-4">
+          <Card className="border-none shadow-[var(--fg-shadow)]">
+            <CardHeader className="pb-3">
+              <CardTitle>Order Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {cart?.items.map((item) => (
+                <div key={item.id} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{item.productTitle} Ã— {item.quantity}</span>
+                  <span className="font-semibold">â‚¹{item.subtotal}</span>
+                </div>
+              ))}
+              <div className="border-t border-border pt-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Items ({cart?.totalItems ?? 0})</span>
+                  <span className="font-semibold">â‚¹{cart?.totalAmount ?? 0}</span>
+                </div>
+                <div className="mt-1 flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Delivery</span>
+                  <span className="text-sm font-semibold text-emerald-600">FREE</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-brand-100 px-4 py-2.5">
+                <span className="font-bold text-brand-700">Total</span>
+                <span className="text-xl font-extrabold text-brand-700">â‚¹{cart?.totalAmount ?? 0}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-emerald-200 bg-emerald-50">
+            <CardContent className="flex items-start gap-2 p-3 text-xs text-emerald-700">
+              <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              Secure payment powered by Razorpay. Your payment details are never stored.
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }
+

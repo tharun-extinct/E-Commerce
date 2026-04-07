@@ -287,6 +287,220 @@ a {
   color: rgba(255, 255, 255, 0.85);
 }
 
+/* ─── Shared page components ─────────────────────────────────── */
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--fg-green-dark);
+  line-height: 1.2;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--fg-text-muted);
+}
+
+.card-img-top {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 0.75rem;
+}
+
+/* ─── Avatar dropdown ─────────────────────────────────────────── */
+
+.user-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: #fff;
+  border-radius: var(--fg-radius);
+  box-shadow: 0 8px 30px rgba(27, 67, 50, 0.18);
+  border: 1px solid var(--fg-border);
+  z-index: 100;
+  overflow: hidden;
+  animation: dropdown-in 0.15s ease;
+}
+
+@keyframes dropdown-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.user-dropdown-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--fg-border);
+  background: var(--fg-green-pale);
+}
+
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg-text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+
+.user-dropdown-item:hover {
+  background: var(--fg-green-pale);
+  color: var(--fg-green-dark);
+}
+
+.user-dropdown-item.danger {
+  color: #dc2626;
+}
+
+.user-dropdown-item.danger:hover {
+  background: #fee2e2;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background: var(--fg-border);
+  margin: 0.25rem 0;
+}
+
+/* ─── Admin layout ────────────────────────────────────────────── */
+
+.admin-hero-header {
+  background: linear-gradient(135deg, var(--fg-green-dark) 0%, var(--fg-green) 100%);
+  color: #fff;
+  padding: 2rem 0 1.5rem;
+}
+
+.admin-stat-card {
+  background: #fff;
+  border-radius: var(--fg-radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--fg-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--fg-shadow-hover);
+}
+
+.admin-stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-text-muted);
+}
+
+.admin-stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.admin-stat-sub {
+  font-size: 0.75rem;
+  color: var(--fg-text-muted);
+  margin-top: 0.25rem;
+}
+
+.admin-tab {
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--fg-text-muted);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.admin-tab:hover {
+  color: var(--fg-green);
+}
+
+.admin-tab-active {
+  color: var(--fg-green-dark);
+  border-bottom-color: var(--fg-green);
+}
+
+.admin-table-head {
+  background: var(--fg-green-dark);
+  color: #fff;
+}
+
+.admin-table-head th {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.admin-select {
+  height: 1.9rem;
+  border-radius: var(--fg-radius-sm);
+  border: 1px solid var(--fg-border);
+  background: #fff;
+  padding: 0 0.5rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--fg-text);
+}
+
+.admin-action-btn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--fg-radius-sm);
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.admin-action-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.admin-action-btn-default {
+  border-color: var(--fg-border);
+  color: var(--fg-text-muted);
+  background: #fff;
+}
+
+.admin-action-btn-danger {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.admin-action-btn-success {
+  background: #dcfce7;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
 /* Prevent toast host layer from blocking clicks across the page. */
 [data-sonner-toaster] {
   pointer-events: none;

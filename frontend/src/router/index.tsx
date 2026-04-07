@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import type { ReactElement } from 'react'
 import { AppShell } from '../components/layout/app-shell'
+import { AdminShell } from '../components/layout/admin-shell'
 import { useAuth } from '../context/auth-context'
 import { AdminPage } from '../pages/admin-page'
 import { CartPage } from '../pages/cart-page'
@@ -15,16 +16,15 @@ import { SettingsPage } from '../pages/settings-page'
 
 const RequireAuth = ({ children }: { children: ReactElement }) => {
   const { isAuthenticated, isLoading } = useAuth()
-  if (isLoading) return <div className="py-16 text-center text-sm text-muted-foreground">Checking session...</div>
+  if (isLoading) return <div className="py-16 text-center text-sm text-muted-foreground">Checking session…</div>
   if (!isAuthenticated) return <Navigate to="/login" replace />
   return children
 }
 
 const RequireAdmin = ({ children }: { children: ReactElement }) => {
-  const { user } = useAuth()
-  if (user?.role !== 'ADMIN') {
-    return <Navigate to="/" replace />
-  }
+  const { user, isLoading } = useAuth()
+  if (isLoading) return <div className="py-16 text-center text-sm text-muted-foreground">Checking permissions…</div>
+  if (user?.role !== 'ADMIN') return <Navigate to="/" replace />
   return children
 }
 
@@ -76,17 +76,19 @@ export const router = createBrowserRouter([
           </RequireAuth>
         ),
       },
-      {
-        path: 'admin',
-        element: (
-          <RequireAuth>
-            <RequireAdmin>
-              <AdminPage />
-            </RequireAdmin>
-          </RequireAuth>
-        ),
-      },
       { path: '*', element: <NotFoundPage /> },
     ],
+  },
+  // Admin console — separate shell, not shown in customer navbar
+  {
+    path: '/admin',
+    element: (
+      <RequireAuth>
+        <RequireAdmin>
+          <AdminShell />
+        </RequireAdmin>
+      </RequireAuth>
+    ),
+    children: [{ index: true, element: <AdminPage /> }],
   },
 ])
