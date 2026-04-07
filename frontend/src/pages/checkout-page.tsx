@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -73,7 +73,7 @@ export const CheckoutPage = () => {
             razorpayPaymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature,
           })
-          toast.success('ðŸŽ‰ Payment successful! Order placed.')
+          toast.success('🎉 Payment successful! Order placed.')
           navigate('/orders')
         },
       }
@@ -104,7 +104,7 @@ export const CheckoutPage = () => {
               <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Full Address *</label>
               <textarea
                 className="min-h-28 w-full rounded-xl border border-border bg-white p-3 text-sm transition focus:border-brand-700 focus:outline-none focus:ring-1 focus:ring-brand-700"
-                placeholder="House / Flat no., Street, Landmarkâ€¦"
+                placeholder="House / Flat no., Street, Landmark\u2026"
                 value={form.deliveryAddress}
                 onChange={(e) => setForm((prev) => ({ ...prev, deliveryAddress: e.target.value }))}
               />
@@ -150,7 +150,7 @@ export const CheckoutPage = () => {
               disabled={!isFormValid || checkoutMutation.isPending}
             >
               <Lock className="mr-1.5 h-4 w-4" />
-              {checkoutMutation.isPending ? 'Processingâ€¦' : 'Pay with Razorpay'}
+              {checkoutMutation.isPending ? 'Processing…' : 'Pay with Razorpay'}
             </Button>
           </CardContent>
         </Card>
@@ -164,14 +164,14 @@ export const CheckoutPage = () => {
             <CardContent className="space-y-3">
               {cart?.items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{item.productTitle} Ã— {item.quantity}</span>
-                  <span className="font-semibold">â‚¹{item.subtotal}</span>
+                  <span className="text-muted-foreground">{item.productTitle} × {item.quantity}</span>
+                  <span className="font-semibold">₹{item.subtotal}</span>
                 </div>
               ))}
               <div className="border-t border-border pt-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Items ({cart?.totalItems ?? 0})</span>
-                  <span className="font-semibold">â‚¹{cart?.totalAmount ?? 0}</span>
+                  <span className="font-semibold">₹{cart?.totalAmount ?? 0}</span>
                 </div>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Delivery</span>
@@ -180,7 +180,7 @@ export const CheckoutPage = () => {
               </div>
               <div className="flex items-center justify-between rounded-xl bg-brand-100 px-4 py-2.5">
                 <span className="font-bold text-brand-700">Total</span>
-                <span className="text-xl font-extrabold text-brand-700">â‚¹{cart?.totalAmount ?? 0}</span>
+                <span className="text-xl font-extrabold text-brand-700">₹{cart?.totalAmount ?? 0}</span>
               </div>
             </CardContent>
           </Card>

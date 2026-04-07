@@ -1,4 +1,4 @@
-﻿import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { ShoppingBag, MapPin } from 'lucide-react'
 import { api } from '../lib/api'
@@ -39,7 +39,7 @@ const StatusBadge = ({ label, type }: { label?: string; type: 'order' | 'payment
 }
 
 const formatDate = (value?: string) => {
-  if (!value) return 'â€”'
+  if (!value) return '—'
   const d = new Date(value)
   return Number.isNaN(d.getTime()) ? value : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
@@ -51,14 +51,14 @@ export const OrdersPage = () => {
     queryFn: () => api.getOrders({ page: 0, size: 20, sort: 'createdAt,desc' }),
   })
 
-  if (ordersQuery.isLoading) return <LoadingState label="Loading your ordersâ€¦" />
+  if (ordersQuery.isLoading) return <LoadingState label="Loading your orders…" />
 
   const orders = ordersQuery.data?.content ?? []
 
   if (orders.length === 0) {
     return (
       <div className="empty-state rounded-2xl border border-dashed border-border py-16">
-        <div className="text-6xl">ðŸ›ï¸</div>
+        <div className="text-6xl">📦</div>
         <h5 className="mt-4 text-lg font-semibold">No orders yet</h5>
         <p className="mt-1 text-sm text-muted-foreground">Start shopping to see your orders here!</p>
         <Button className="btn-fg mt-5" onClick={() => navigate('/')}>
@@ -83,11 +83,11 @@ export const OrdersPage = () => {
                   <CardTitle className="text-base font-bold">#{order.orderNumber}</CardTitle>
                   <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                     <MapPin className="h-3 w-3" />
-                    {order.city}{order.pincode ? ` â€“ ${order.pincode}` : ''}
+                    {order.city}{order.pincode ? ` – ${order.pincode}` : ''}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-extrabold text-brand-700">â‚¹{order.totalAmount ?? (order as unknown as { grandTotal?: number }).grandTotal}</p>
+                  <p className="text-xl font-extrabold text-brand-700">₹{order.totalAmount ?? (order as unknown as { grandTotal?: number }).grandTotal}</p>
                   <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { User, Phone, CheckCircle2, AlertCircle } from 'lucide-react'
@@ -44,7 +44,7 @@ export const SettingsPage = () => {
   const verifyOtp = useMutation({
     mutationFn: () => api.verifyPhoneOtp(phoneNumber, otp),
     onSuccess: () => {
-      toast.success('Phone verified successfully! âœ…')
+      toast.success('Phone verified successfully! ✅')
       setOtp('')
       setOtpSent(false)
       void queryClient.invalidateQueries({ queryKey: ['me'] })
@@ -52,7 +52,7 @@ export const SettingsPage = () => {
     onError: () => toast.error('Invalid OTP. Please try again.'),
   })
 
-  if (userQuery.isLoading) return <LoadingState label="Loading settingsâ€¦" />
+  if (userQuery.isLoading) return <LoadingState label="Loading settings…" />
 
   const user = userQuery.data
   const isPhoneVerified = user?.phoneVerified
@@ -89,7 +89,7 @@ export const SettingsPage = () => {
             </div>
           </div>
           <Button className="btn-fg" onClick={() => saveProfile.mutate()} disabled={saveProfile.isPending}>
-            {saveProfile.isPending ? 'Savingâ€¦' : 'Save Profile'}
+            {saveProfile.isPending ? 'Saving…' : 'Save Profile'}
           </Button>
         </CardContent>
       </Card>
@@ -127,7 +127,7 @@ export const SettingsPage = () => {
                 onClick={() => sendOtp.mutate()}
                 disabled={!phoneNumber.trim() || sendOtp.isPending}
               >
-                {sendOtp.isPending ? 'Sendingâ€¦' : otpSent ? 'Resend OTP' : 'Send OTP'}
+                {sendOtp.isPending ? 'Sending…' : otpSent ? 'Resend OTP' : 'Send OTP'}
               </Button>
             </div>
           </div>
@@ -144,7 +144,7 @@ export const SettingsPage = () => {
                   className="flex-1"
                 />
                 <Button className="btn-fg shrink-0" onClick={() => verifyOtp.mutate()} disabled={otp.length < 4 || verifyOtp.isPending}>
-                  {verifyOtp.isPending ? 'Verifyingâ€¦' : 'Verify'}
+                  {verifyOtp.isPending ? 'Verifying…' : 'Verify'}
                 </Button>
               </div>
             </div>

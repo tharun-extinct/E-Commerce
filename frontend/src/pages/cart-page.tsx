@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react'
@@ -31,14 +31,14 @@ export const CartPage = () => {
     onError: () => toast.error('Unable to remove item'),
   })
 
-  if (cartQuery.isLoading) return <LoadingState label="Loading your cartâ€¦" />
+  if (cartQuery.isLoading) return <LoadingState label="Loading your cart…" />
 
   const cart = cartQuery.data
 
   if (!cart || cart.items.length === 0) {
     return (
       <div className="empty-state rounded-2xl border border-dashed border-border py-16">
-        <div className="text-6xl">ðŸ›’</div>
+        <div className="text-6xl">🛒</div>
         <h5 className="mt-4 text-lg font-semibold text-foreground">Your cart is empty</h5>
         <p className="mt-1 text-sm text-muted-foreground">Add some fresh produce to get started!</p>
         <Button className="btn-fg mt-5" onClick={() => navigate('/')}>
@@ -68,8 +68,8 @@ export const CartPage = () => {
                 />
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold leading-tight">{item.productTitle}</p>
-                  <p className="mt-0.5 text-sm text-muted-foreground">â‚¹{item.price} per unit</p>
-                  <p className="text-sm font-semibold text-brand-700">Subtotal: â‚¹{item.subtotal}</p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">₹{item.price} per unit</p>
+                  <p className="text-sm font-semibold text-brand-700">Subtotal: ₹{item.subtotal}</p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-2">
                   <div className="quantity-controls flex items-center gap-1.5 rounded-full border border-border px-2 py-1">
@@ -117,14 +117,14 @@ export const CartPage = () => {
             <div className="divide-y divide-border rounded-xl border border-border">
               {cart.items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between px-3 py-2 text-sm">
-                  <span className="text-muted-foreground">{item.productTitle} Ã— {item.quantity}</span>
-                  <span className="font-semibold">â‚¹{item.subtotal}</span>
+                  <span className="text-muted-foreground">{item.productTitle} × {item.quantity}</span>
+                  <span className="font-semibold">₹{item.subtotal}</span>
                 </div>
               ))}
             </div>
             <div className="flex items-center justify-between rounded-xl bg-brand-100 px-4 py-2.5">
               <span className="font-semibold text-brand-700">Total ({cart.totalItems} items)</span>
-              <span className="text-xl font-extrabold text-brand-700">â‚¹{cart.totalAmount}</span>
+              <span className="text-xl font-extrabold text-brand-700">₹{cart.totalAmount}</span>
             </div>
             <Button className="btn-accent w-full" size="lg" onClick={() => navigate('/checkout')}>
               Proceed to Checkout <ArrowRight className="ml-1.5 h-4 w-4" />

@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Users, Package, ShoppingBag, IndianRupee, RefreshCw } from 'lucide-react'
@@ -12,10 +12,10 @@ const PAGE_SIZE = 15
 type AdminTab = 'users' | 'products' | 'orders'
 
 const toINR = (value: number) =>
-  `â‚¹${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
+  `₹${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 const formatDate = (value?: string) => {
-  if (!value) return 'â€”'
+  if (!value) return '—'
   const parsed = new Date(value)
   return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
@@ -33,7 +33,7 @@ const variantClasses: Record<BadgeVariant, string> = {
 
 const Pill = ({ label, variant = 'gray' }: { label?: string; variant?: BadgeVariant }) => (
   <span className={`inline-block rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${variantClasses[variant]}`}>
-    {label || 'â€”'}
+    {label || '—'}
   </span>
 )
 
@@ -66,7 +66,7 @@ const getOrderStatusVariant = (s?: string): BadgeVariant => {
   return 'gray'
 }
 
-// â”€â”€â”€ Stat Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Stat Card
 const StatCard = ({
   label,
   value,
@@ -92,7 +92,7 @@ const StatCard = ({
   </div>
 )
 
-// â”€â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Main component
 export const AdminPage = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('users')
   const [usersPage, setUsersPage] = useState(0)
@@ -140,14 +140,14 @@ export const AdminPage = () => {
   const orderStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: number; status: 'CREATED' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' }) =>
       api.updateAdminOrderStatus(id, status),
-    onSuccess: (_, { status }) => { toast.success(`Order status â†’ ${status}`); void queryClient.invalidateQueries({ queryKey: ['admin-orders'] }) },
+    onSuccess: (_, { status }) => { toast.success(`Order status → ${status}`); void queryClient.invalidateQueries({ queryKey: ['admin-orders'] }) },
     onError: () => toast.error('Unable to update order status'),
   })
 
-  if (statsQuery.isLoading) return <LoadingState label="Loading admin dashboardâ€¦" />
+  if (statsQuery.isLoading) return <LoadingState label="Loading admin dashboard…" />
   const stats = statsQuery.data
 
-  // â”€â”€ Pagination helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Pagination helpers
   const currentPage   = activeTab === 'users' ? usersPage    : activeTab === 'products' ? productsPage    : ordersPage
   const currentQuery  = activeTab === 'users' ? usersQuery   : activeTab === 'products' ? productsQuery   : ordersQuery
   const canPrev = currentPage > 0
@@ -166,7 +166,7 @@ export const AdminPage = () => {
     if (activeTab === 'orders')   setOrdersPage((p) => p + 1)
   }
 
-  // â”€â”€ Table renderers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Table renderers
   const renderUsersTable = (users: AdminUser[]) => {
     if (!users.length) return <p className="py-10 text-center text-sm text-muted-foreground">No users found.</p>
     return (
@@ -188,18 +188,18 @@ export const AdminPage = () => {
             {users.map((u) => (
               <tr key={u.id} className="hover:bg-[#f8faf9] transition-colors">
                 <td className="p-3">
-                  <p className="font-semibold">{u.displayName || 'â€”'}</p>
+                  <p className="font-semibold">{u.displayName || '—'}</p>
                   <p className="text-xs text-muted-foreground">#{u.id}</p>
                 </td>
-                <td className="p-3 text-xs">{u.email || 'â€”'}</td>
+                <td className="p-3 text-xs">{u.email || '?'}</td>
                 <td className="p-3 text-xs">{u.phone || '—'}</td>
                 <td className="p-3"><Pill label={u.role} variant={getRoleVariant(u.role)} /></td>
                 <td className="p-3">
                   <Pill label={u.active ? 'Active' : 'Inactive'} variant={u.active ? 'green' : 'red'} />
                 </td>
                 <td className="p-3">
-                  <span title={u.phoneVerified ? 'Phone verified' : 'Phone not verified'} className={`mr-1 text-base ${u.phoneVerified ? 'text-emerald-600' : 'text-gray-300'}`}>ðŸ“±</span>
-                  <span title={u.emailVerified ? 'Email verified' : 'Email not verified'} className={`text-base ${u.emailVerified ? 'text-emerald-600' : 'text-gray-300'}`}>âœ‰ï¸</span>
+                  <span title={u.phoneVerified ? 'Phone verified' : 'Phone not verified'} className={`mr-1 text-base ${u.phoneVerified ? 'text-emerald-600' : 'text-gray-300'}`}>📱</span>
+                  <span title={u.emailVerified ? 'Email verified' : 'Email not verified'} className={`text-base ${u.emailVerified ? 'text-emerald-600' : 'text-gray-300'}`}>✉️</span>
                 </td>
                 <td className="p-3 text-xs text-muted-foreground">{formatDate(u.createdAt)}</td>
                 <td className="p-3">
@@ -255,11 +255,11 @@ export const AdminPage = () => {
               <tr key={p.id} className="hover:bg-[#f8faf9] transition-colors">
                 <td className="p-3">
                   <p className="font-semibold">{p.title}</p>
-                  <p className="text-xs text-muted-foreground">#{p.id} Â· {p.city || 'â€”'}</p>
+                  <p className="text-xs text-muted-foreground">#{p.id} – {p.city || '—'}</p>
                 </td>
-                <td className="p-3 text-xs">{(p as unknown as { sellerName?: string }).sellerName || 'â€”'}</td>
+                <td className="p-3 text-xs">{(p as unknown as { sellerName?: string }).sellerName || '—'}</td>
                 <td className="p-3 font-bold text-emerald-700">{toINR(Number(p.price))}</td>
-                <td className="p-3 text-xs">{p.categoryName || 'â€”'}</td>
+                <td className="p-3 text-xs">{p.categoryName || '—'}</td>
                 <td className="p-3">{p.stockQuantity}</td>
                 <td className="p-3"><Pill label={p.status?.replace('_', ' ')} variant={getProductStatusVariant(p.status)} /></td>
                 <td className="p-3 text-xs text-muted-foreground">{formatDate(p.createdAt)}</td>
@@ -308,13 +308,13 @@ export const AdminPage = () => {
               <tr key={o.orderId} className="hover:bg-[#f8faf9] transition-colors">
                 <td className="p-3 font-bold">#{o.orderNumber}</td>
                 <td className="p-3">
-                  <p className="font-semibold">{o.buyerName || 'â€”'}</p>
-                  <p className="text-xs text-muted-foreground">{o.buyerEmail || 'â€”'}</p>
+                  <p className="font-semibold">{o.buyerName || '—'}</p>
+                  <p className="text-xs text-muted-foreground">{o.buyerEmail || '—'}</p>
                 </td>
                 <td className="p-3 font-bold text-emerald-700">{toINR(o.grandTotal)}</td>
                 <td className="p-3"><Pill label={o.paymentStatus} variant={getPaymentVariant(o.paymentStatus)} /></td>
                 <td className="p-3"><Pill label={o.orderStatus} variant={getOrderStatusVariant(o.orderStatus)} /></td>
-                <td className="p-3 text-xs">{o.city || 'â€”'}</td>
+                <td className="p-3 text-xs">{o.city || '—'}</td>
                 <td className="p-3 text-xs text-muted-foreground">{formatDate(o.createdAt)}</td>
                 <td className="p-3">
                   <select
@@ -344,7 +344,7 @@ export const AdminPage = () => {
     )
   }
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Render
   return (
     <div>
       {/* Admin Header Banner */}
@@ -353,7 +353,7 @@ export const AdminPage = () => {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="flex items-center gap-2 text-2xl font-extrabold text-white">
-                ðŸ› ï¸ Admin Dashboard
+                🛠️ Admin Dashboard
                 <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-bold tracking-wide">ADMIN</span>
               </h1>
               <p className="mt-1 text-sm text-white/80">Manage users, products, and orders across the platform.</p>
@@ -375,7 +375,7 @@ export const AdminPage = () => {
               accent="border-l-emerald-500"
               label="Total Users"
               value={stats.totalUsers.toLocaleString()}
-              sub={`${stats.totalSellers?.toLocaleString() ?? 'â€”'} sellers`}
+              sub={`${stats.totalSellers?.toLocaleString() ?? '—'} sellers`}
               icon={<Users className="h-6 w-6 text-emerald-500" />}
             />
             <StatCard
@@ -425,17 +425,17 @@ export const AdminPage = () => {
           <div className="p-0">
             {activeTab === 'users' && (
               usersQuery.isLoading
-                ? <div className="py-12 text-center"><LoadingState label="Loading usersâ€¦" /></div>
+                ? <div className="py-12 text-center"><LoadingState label="Loading users…" /></div>
                 : renderUsersTable(usersQuery.data?.content || [])
             )}
             {activeTab === 'products' && (
               productsQuery.isLoading
-                ? <div className="py-12 text-center"><LoadingState label="Loading productsâ€¦" /></div>
+                ? <div className="py-12 text-center"><LoadingState label="Loading products…" /></div>
                 : renderProductsTable(productsQuery.data?.content || [])
             )}
             {activeTab === 'orders' && (
               ordersQuery.isLoading
-                ? <div className="py-12 text-center"><LoadingState label="Loading ordersâ€¦" /></div>
+                ? <div className="py-12 text-center"><LoadingState label="Loading orders…" /></div>
                 : renderOrdersTable(ordersQuery.data?.content || [])
             )}
           </div>
@@ -448,10 +448,10 @@ export const AdminPage = () => {
               onClick={onPrev}
               disabled={!canPrev}
             >
-              â† Previous
+              ← Previous
             </button>
             <p className="text-xs text-muted-foreground">
-              Page {currentPage + 1} of {totalPages} â€” {totalElements.toLocaleString()} total
+              Page {currentPage + 1} of {totalPages} — {totalElements.toLocaleString()} total
             </p>
             <button
               type="button"
@@ -459,7 +459,7 @@ export const AdminPage = () => {
               onClick={onNext}
               disabled={!canNext}
             >
-              Next â†’
+              Next →
             </button>
           </div>
         </div>

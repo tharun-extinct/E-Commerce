@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { MapPin, ShoppingCart, ChevronLeft, Package, Tag } from 'lucide-react'
@@ -21,20 +21,20 @@ export const ProductDetailPage = () => {
   const addMutation = useMutation({
     mutationFn: (productId: number) => api.addToCart(productId, 1),
     onSuccess: () => {
-      toast.success('Added to cart ðŸ›’')
+      toast.success('Added to cart 🛒')
       void queryClient.invalidateQueries({ queryKey: ['cart'] })
       void queryClient.invalidateQueries({ queryKey: ['cart-count'] })
     },
     onError: () => toast.error('Could not add to cart. Please sign in first.'),
   })
 
-  if (productQuery.isLoading) return <LoadingState label="Loading productâ€¦" />
+  if (productQuery.isLoading) return <LoadingState label="Loading product…" />
 
   const product = productQuery.data
   if (!product) {
     return (
       <div className="empty-state py-16">
-        <div className="text-5xl">ðŸ”</div>
+        <div className="text-5xl">🔍</div>
         <h5 className="mt-3 text-base font-semibold">Product not found</h5>
         <p className="text-sm text-muted-foreground">This product may have been removed or expired.</p>
         <Button className="btn-fg mt-4" onClick={() => navigate('/')}>Back to Home</Button>
@@ -88,7 +88,7 @@ export const ProductDetailPage = () => {
 
             {/* Price */}
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold text-brand-700">â‚¹{product.price}</span>
+              <span className="text-3xl font-extrabold text-brand-700">₹{product.price}</span>
               <span className="text-base font-medium text-muted-foreground">/ {product.unit}</span>
             </div>
 
@@ -109,7 +109,7 @@ export const ProductDetailPage = () => {
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-[var(--fg-accent)]" />
                 <span className="text-muted-foreground">Delivery area:</span>
-                <span className="font-semibold">{product.city}{product.pincode ? ` â€“ ${product.pincode}` : ''}</span>
+                <span className="font-semibold">{product.city}{product.pincode ? ` – ${product.pincode}` : ''}</span>
               </div>
               {product.categoryName && (
                 <div className="flex items-center gap-2">
@@ -129,7 +129,7 @@ export const ProductDetailPage = () => {
                 disabled={addMutation.isPending || isOutOfStock}
               >
                 <ShoppingCart className="mr-1.5 h-4 w-4" />
-                {addMutation.isPending ? 'Addingâ€¦' : 'Add to Cart'}
+                {addMutation.isPending ? 'Adding…' : 'Add to Cart'}
               </Button>
               <Button className="btn-fg-outline" variant="outline" size="lg" onClick={() => navigate('/cart')}>
                 Go to Cart

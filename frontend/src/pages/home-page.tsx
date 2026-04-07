@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { MapPin, ArrowUpDown, ShoppingCart } from 'lucide-react'
@@ -19,7 +19,7 @@ export const HomePage = () => {
   const [sortMenuOpen, setSortMenuOpen] = useState(false)
 
   const keyword = (searchParams.get('q') || '').trim()
-  const hasLocationFilter = location.city !== 'All Cities' || Boolean(location.pincode)
+  const hasLocationFilter = location.city !== 'All Cities'
 
   const categoriesQuery = useQuery({
     queryKey: ['categories'],
@@ -27,25 +27,23 @@ export const HomePage = () => {
   })
 
   const productsQuery = useQuery({
-    queryKey: ['products', page, categoryId, keyword, location.city, location.pincode],
+    queryKey: ['products', page, categoryId, keyword, location.city],
     queryFn: () =>
       keyword
-        ? api.searchProducts({ q: keyword, city: location.city !== 'All Cities' ? location.city : undefined, pincode: location.pincode || undefined, page, size: 12 })
+        ? api.searchProducts({ q: keyword, city: location.city !== 'All Cities' ? location.city : undefined, page, size: 12 })
         : categoryId
           ? api.getProductsByCategory(categoryId, { page, size: 12 })
           : hasLocationFilter
-            ? api.searchProducts({ city: location.city !== 'All Cities' ? location.city : undefined, pincode: location.pincode || undefined, page, size: 12 })
+            ? api.searchProducts({ city: location.city, page, size: 12 })
             : api.getProducts({ page, size: 12 }),
   })
 
   const filteredProducts = useMemo(() => {
     const list = productsQuery.data?.content ?? []
     const filtered = hasLocationFilter
-      ? list.filter((item) => {
-          const cityMatches = location.city === 'All Cities' || item.city?.toLowerCase() === location.city.toLowerCase()
-          const pincodeMatches = !location.pincode || item.pincode === location.pincode
-          return cityMatches && pincodeMatches
-        })
+      ? list.filter((item) =>
+          item.city?.toLowerCase() === location.city.toLowerCase()
+        )
       : list
     if (sortOrder === 'price-asc') return [...filtered].sort((a, b) => Number(a.price) - Number(b.price))
     if (sortOrder === 'price-desc') return [...filtered].sort((a, b) => Number(b.price) - Number(a.price))
@@ -54,7 +52,7 @@ export const HomePage = () => {
 
   const sortLabel = sortOrder === 'price-asc' ? 'Price: Low to High' : sortOrder === 'price-desc' ? 'Price: High to Low' : 'Sort by'
 
-  if (productsQuery.isLoading && page === 0) return <LoadingState label="Loading fresh productsâ€¦" />
+  if (productsQuery.isLoading && page === 0) return <LoadingState label="Loading fresh products…" />
 
   return (
     <section className="space-y-6">
@@ -62,23 +60,23 @@ export const HomePage = () => {
       <div className="hero-section rounded-3xl p-7 md:p-10">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="hero-title">Fresh from the Farm,<br />Straight to Your Door ðŸŒ±</h1>
+            <h1 className="hero-title">Fresh from the Farm,<br />Straight to Your Door 🥗</h1>
             <p className="hero-subtitle mt-2">
               Discover locally grown fruits, vegetables, and organic produce from trusted farmers near you.
             </p>
             {hasLocationFilter && (
               <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-sm font-semibold text-brand-700">
                 <MapPin className="h-3.5 w-3.5 text-[var(--fg-accent)]" />
-                Showing produce for {location.city}{location.pincode ? ` â€“ ${location.pincode}` : ''}
+                Showing produce for {location.city}{location.pincode ? ` – ${location.pincode}` : ''}
               </p>
             )}
             <div className="mt-4">
               <a href="#products" className="btn-fg inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold text-white no-underline">
-                Explore Products â†“
+                Explore Products ↓
               </a>
             </div>
           </div>
-          <div className="hidden text-[7rem] leading-none md:block">ðŸ¥—</div>
+          <div className="hidden text-[7rem] leading-none md:block">🥗</div>
         </div>
       </div>
 
@@ -164,7 +162,7 @@ export const HomePage = () => {
             <div className="card-body p-3">
               <p className="product-title line-clamp-1 text-base">{product.title}</p>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="product-price">â‚¹{product.price}</span>
+                <span className="product-price">₹{product.price}</span>
                 <span className="text-xs text-muted-foreground">/ {product.unit}</span>
               </div>
               <div className="mt-2 flex items-center justify-between">
@@ -189,7 +187,7 @@ export const HomePage = () => {
       {/* Empty state */}
       {filteredProducts.length === 0 && !productsQuery.isLoading && (
         <div className="empty-state">
-          <div className="text-5xl">ðŸ§º</div>
+          <div className="text-5xl">🧺</div>
           <h5 className="mt-3 text-base font-semibold">No products found</h5>
           <p className="text-sm text-muted-foreground">
             {keyword ? `No results for "${keyword}". Try a different keyword.` : 'Try adjusting your search or location.'}
@@ -201,12 +199,12 @@ export const HomePage = () => {
       <div className="flex items-center justify-center gap-3">
         {page > 0 && (
           <Button variant="outline" className="btn-fg-outline" onClick={() => setPage((p) => Math.max(0, p - 1))}>
-            â† Previous
+            ← Previous
           </Button>
         )}
         {!productsQuery.data?.last && filteredProducts.length > 0 && (
           <Button className="btn-fg" onClick={() => setPage((p) => p + 1)} disabled={productsQuery.isLoading}>
-            {productsQuery.isLoading ? 'Loadingâ€¦' : 'Load More'}
+            {productsQuery.isLoading ? 'Loading…' : 'Load More'}
           </Button>
         )}
         {page > 0 && <span className="text-sm text-muted-foreground">Page {page + 1}</span>}

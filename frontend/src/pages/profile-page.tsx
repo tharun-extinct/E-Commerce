@@ -1,4 +1,4 @@
-﻿import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { ShoppingBag, Settings, CheckCircle2, XCircle, User } from 'lucide-react'
 import { api } from '../lib/api'
@@ -30,7 +30,7 @@ const QuickLink = ({ to, icon, label }: { to: string; icon: React.ReactNode; lab
     className="flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm font-medium text-foreground transition hover:bg-brand-100 hover:text-brand-700"
   >
     <span className="flex items-center gap-2">{icon}{label}</span>
-    <span className="text-muted-foreground">â€º</span>
+    <span className="text-muted-foreground">›</span>
   </Link>
 )
 
@@ -38,7 +38,7 @@ export const ProfilePage = () => {
   const userQuery = useQuery({ queryKey: ['me'], queryFn: api.getCurrentUser })
   const user = userQuery.data
 
-  if (userQuery.isLoading) return <LoadingState label="Loading profileâ€¦" />
+  if (userQuery.isLoading) return <LoadingState label="Loading profile…" />
 
   return (
     <div className="mx-auto max-w-xl space-y-5">
@@ -60,13 +60,13 @@ export const ProfilePage = () => {
             </div>
           )}
           <div>
-            <h2 className="text-xl font-bold text-foreground">{user?.displayName || 'â€”'}</h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">{user?.email || 'â€”'}</p>
+            <h2 className="text-xl font-bold text-foreground">{user?.displayName || '—'}</h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">{user?.email || '—'}</p>
             <div className="mt-2 flex flex-wrap justify-center gap-2">
               <RoleBadge role={user?.role} />
               {user?.city && (
                 <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
-                  ðŸ“ {user.city}{user.pincode ? ` â€“ ${user.pincode}` : ''}
+                  📍 {user.city}{user.pincode ? ` – ${user.pincode}` : ''}
                 </span>
               )}
             </div>
