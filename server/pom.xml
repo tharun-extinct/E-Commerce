@@ -124,9 +124,13 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
 
-	<build>
+                <!-- Twilio Java SDK -->
+                <dependency>
+                        <groupId>com.twilio.sdk</groupId>
+                        <artifactId>twilio</artifactId>
+                        <version>10.6.2</version>
+                </dependency>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
