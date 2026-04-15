@@ -450,3 +450,17 @@ cmd /c '"C:\Program Files\Java\jdk-17\bin\java.exe" -cp "C:\Temp" SSLTest 2>&1'
    -Djavax.net.ssl.trustStorePassword=<password>
    ```
 5. **Added** `**/jvm.config` to .gitignore — this file is machine-specific and must never be committed
+
+
+
+
+```
+$env:SPRING_PROFILES_ACTIVE='local'; .\mvnw.cmd spring-boot:run -D"spring-boot.run.jvmArguments=-Djavax.net.ssl.trustStore=C:/Users/2472081/.jvm/
+```
+
+
+
+
+```
+$env:SPRING_PROFILES_ACTIVE='local'; .\mvnw.cmd spring-boot:run -D"spring-boot.run.jvmArguments=-Djavax.net.ssl.trustStore=C:/Users/2472081/.jvm/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+```
