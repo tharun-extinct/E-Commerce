@@ -39,6 +39,4 @@ public class OrderItem {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
-    @Column(length = 100)
-    private String sellerName;
 }

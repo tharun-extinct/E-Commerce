@@ -37,7 +37,6 @@ public class AdminService {
     @Transactional(readOnly = true)
     public AdminStatsResponse getStats() {
         long totalUsers     = userRepository.count();
-        long totalSellers   = userRepository.countByRole(User.Role.SELLER);
         long totalProducts  = productRepository.count();
         long activeProducts = productRepository.countByStatus(Product.Status.ACTIVE);
         long totalOrders    = orderRepository.count();
@@ -46,7 +45,6 @@ public class AdminService {
 
         return AdminStatsResponse.builder()
                 .totalUsers(totalUsers)
-                .totalSellers(totalSellers)
                 .totalProducts(totalProducts)
                 .activeProducts(activeProducts)
                 .totalOrders(totalOrders)
@@ -145,8 +143,6 @@ public class AdminService {
                 .pincode(product.getPincode())
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : "")
                 .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-                .sellerName(product.getSeller() != null ? product.getSeller().getDisplayName() : "")
-                .sellerId(product.getSeller() != null ? product.getSeller().getId() : null)
                 .status(product.getStatus().name())
                 .createdAt(product.getCreatedAt() != null ? product.getCreatedAt().toLocalDate().toString() : "")
                 .build();

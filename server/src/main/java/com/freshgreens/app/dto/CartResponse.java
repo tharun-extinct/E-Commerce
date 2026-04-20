@@ -28,6 +28,5 @@ public class CartResponse {
         private Integer quantity;
         private BigDecimal subtotal;
         private Integer stockAvailable;
-        private String sellerName;
     }
 }

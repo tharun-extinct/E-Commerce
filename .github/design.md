@@ -1,38 +1,41 @@
 # Fresh Greens Platform Design & Architecture
 
 ## 1. System Overview
-Fresh Greens is a monolithic B2C e-commerce web application running on Spring Boot. It connects buyers directly with sellers for fresh agricultural produce, functioning similarly to an online marketplace. The platform uses a client-server model where a single Spring Boot application hosts both the REST API endpoints and static static web assets.
+Fresh Greens is a decoupled e-commerce web application running a robust Spring Boot backend alongside a modern, dynamic React frontend. It functions as an online marketplace for fresh agricultural produce. The platform utilizes a two-portal architecture consisting of a primary consumer portal for users and a protected admin portal for management.
 
 ## 2. Tech Stack
-*   **Backend:** Java 17+, Spring Boot 3
+*   **Backend:** Java 17, Spring Boot 4
 *   **Data Persistence:** Spring Data JPA (Hibernate), MySQL Database
 *   **Security & Authentication:** Spring Security, Firebase Admin Auth SDK (Client-side Firebase JWT Tokens verified by Backend)
-*   **Caching:** Redis (or in-memory ConcurrentMap for local dev) via Spring Boot `@EnableCaching`
-*   **Payment Gateway:** Razorpay Java SDK (Order creation + Webhook verifications)
-*   **Frontend:** Vanilla HTML, CSS, JavaScript (Static fetching rendered client-side via API calls)
+*   **Caching:** Redis (via Spring Boot @EnableCaching)
+*   **Payment Gateway:** Razorpay Java SDK
+*   **Notifications:** Twilio SDK
+*   **Frontend:** React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui components, React Router, React Query.
 
 ## 3. Core Modules & Configuration Layers
 
 ### 3.1 Security & Auth
-*   `FirebaseTokenFilter`: Custom Spring Filter that intercepts the incoming requests, parses the `Bearer` token, resolves it via Firebase, and propagates `ROLE_USER`, `ROLE_SELLER`, or `ROLE_ADMIN` context into Spring's `SecurityContextHolder`.
-*   `SecurityConfig`: Sets authorization rules (CSRF excluded for API edges like `/api/webhook` and auth, while stateful sessions (`JSESSIONID`) are maintained dynamically).
+*   FirebaseTokenFilter: Custom Spring Filter that intercepts incoming requests, parses the Bearer token via Firebase, and propagates ROLE_BUYER or ROLE_ADMIN context into Spring's SecurityContextHolder.
+*   SecurityConfig: Establishes authorization patterns mapping stateless token validation.
 
 ### 3.2 Caching Mechanism
-*   `CacheConfig` & `RedisConfig`: Conditional caching beans providing quick hits for static catalog data (e.g., Active Products `TTL 5m`, Categories `TTL 30m`).
+*   RedisConfig: Applies caching strategies for frequently accessed but read-heavy data.
 
 ### 3.3 Payments
-*   `OrderController` & `RazorpayConfig`: Encapsulates operations securely exchanging currency info with Razorpay APIs. Creates the order before prompting the interface and handles `PaymentVerifyRequest` (validating HMAC-SHA256 signatures).
-*   `WebhookController`: Independent receptor for Razorpay's asynchronous event pings (`payment.captured`, etc.).
+*   OrderController & RazorpayConfig: Encapsulates operations reliably exchanging information with Razorpay APIs. Creates the order before prompting the interface and handles signature verifications.
+*   WebhookController: Independent receptor for Razorpay's asynchronous event pings (payment.captured, etc.).
 
-## 4. Admin Management Page
-An dedicated module accessible exclusively by `ROLE_ADMIN` identities. Contains backend implementations via the `AdminController` to oversee and manage platform integrity.
+## 4. Portals & Application Flow
+
+### 4.1 Default User Portal (/)
+The primary interface accessible by both Guests and authenticated Users/Buyers. It provides robust capabilities from product discovery to secure checkouts via an intuitive React frontend.
+
+### 4.2 Admin Portal (/admin)
+An exclusive management shell restricted strictly to ROLE_ADMIN identities. Includes endpoints governed by the AdminController to oversee platform metrics.
 *   **Stats Dashboard**: Retrieves global transaction and user metrics.
-*   **User Management**: Fetch paginated arrays of registered accounts, toggle active/inactive constraints, and update/elevate distinct roles (e.g. promoting a buyer to a seller).
-*   **Product Moderation**: Fetch universal product catalogues regardless of their visibilities and exercise toggle actions (e.g., force rejecting or unpublishing a contested item).
-*   **Universal Order Supervision**: Ability to review cross-platform orders globally.
+*   **User & Product Management**: Administer accounts, control active constraints, manage product catalogs, and review cross-platform orders globally.
 
 ## 5. User Roles and Authorizations
-1.  **GUEST (Unauthenticated)**: May browse categories and search active products.
-2.  **ROLE_USER**: May mutate cart inventories, place checkouts, process payments, and track order histories.
-3.  **ROLE_SELLER**: Inherits Buyer capabilities + Can create, publish, and edit custom produce entries mapped directly against their `sellerId`.
-4.  **ROLE_ADMIN**: May access the admin APIs. Governs users, moderates catalog data overriding Seller ownership, and monitors stats.
+
+1.  **ROLE_BUYER (User)**: May mutate cart inventories, place checkouts, process payments, update profile details, and track order histories.
+2.  **ROLE_ADMIN**: May log into the /admin portal. Possesses absolute governance over user accounts, universal orders, and product data.

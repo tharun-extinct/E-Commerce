@@ -39,7 +39,6 @@ const Pill = ({ label, variant = 'gray' }: { label?: string; variant?: BadgeVari
 
 const getRoleVariant = (role?: string): BadgeVariant => {
   if (role === 'ADMIN') return 'red'
-  if (role === 'SELLER') return 'orange'
   return 'blue'
 }
 
@@ -241,7 +240,6 @@ export const AdminPage = () => {
           <thead>
             <tr className="admin-table-head">
               <th className="p-3">Product</th>
-              <th className="p-3">Seller</th>
               <th className="p-3">Price</th>
               <th className="p-3">Category</th>
               <th className="p-3">Stock</th>
@@ -257,7 +255,6 @@ export const AdminPage = () => {
                   <p className="font-semibold">{p.title}</p>
                   <p className="text-xs text-muted-foreground">#{p.id} – {p.city || '—'}</p>
                 </td>
-                <td className="p-3 text-xs">{(p as unknown as { sellerName?: string }).sellerName || '—'}</td>
                 <td className="p-3 font-bold text-emerald-700">{toINR(Number(p.price))}</td>
                 <td className="p-3 text-xs">{p.categoryName || '—'}</td>
                 <td className="p-3">{p.stockQuantity}</td>
@@ -375,7 +372,6 @@ export const AdminPage = () => {
               accent="border-l-emerald-500"
               label="Total Users"
               value={stats.totalUsers.toLocaleString()}
-              sub={`${stats.totalSellers?.toLocaleString() ?? '—'} sellers`}
               icon={<Users className="h-6 w-6 text-emerald-500" />}
             />
             <StatCard

@@ -145,7 +145,6 @@ public class CartService {
                 .quantity(item.getQuantity())
                 .subtotal(item.getTotalPrice())
                 .stockAvailable(item.getProduct().getStockQuantity())
-                .sellerName(item.getProduct().getSeller().getDisplayName())
                 .build()
         ).collect(Collectors.toList());
 

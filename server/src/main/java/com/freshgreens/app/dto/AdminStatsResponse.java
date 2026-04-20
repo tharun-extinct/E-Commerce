@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 public class AdminStatsResponse {
 
     private long totalUsers;
-    private long totalSellers;
     private long totalProducts;
     private long activeProducts;
     private long totalOrders;

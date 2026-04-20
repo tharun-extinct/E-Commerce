@@ -33,6 +33,5 @@ public class OrderResponse {
         private Integer quantity;
         private BigDecimal unitPrice;
         private BigDecimal totalPrice;
-        private String sellerName;
     }
 }

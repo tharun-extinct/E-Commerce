@@ -24,7 +24,7 @@ public class ProductController {
     }
 
     /**
-     * GET /api/products — Public: List active products (paginated, cached)
+     * GET /api/products  Public: List active products (paginated, cached)
      */
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getProducts(
@@ -34,7 +34,7 @@ public class ProductController {
     }
 
     /**
-     * GET /api/products/{id} — Public: Get product detail
+     * GET /api/products/{id}  Public: Get product detail
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> getProduct(@PathVariable Long id) {
@@ -42,7 +42,7 @@ public class ProductController {
     }
 
     /**
-     * GET /api/products/category/{categoryId} — Public: Products by category
+     * GET /api/products/category/{categoryId}  Public: Products by category
      */
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getByCategory(
@@ -54,7 +54,7 @@ public class ProductController {
     }
 
     /**
-     * GET /api/products/search — Public: Search products with optional location filter
+     * GET /api/products/search  Public: Search products with optional location filter
      */
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> searchProducts(
@@ -68,22 +68,13 @@ public class ProductController {
     }
 
     /**
-     * POST /api/products — Auth required: Create new product listing
+     * POST /api/products  Auth required: Create new product listing
      */
     @PostMapping
     public ResponseEntity<ApiResponse<ProductResponse>> createProduct(
-            @Valid @RequestBody ProductRequest request,
-            @AuthenticationPrincipal User user) {
-        ProductResponse product = productService.createProduct(request, user);
+            @Valid @RequestBody ProductRequest request) {
+        ProductResponse product = productService.createProduct(request);
         return ResponseEntity.ok(ApiResponse.success("Product listed successfully", product));
     }
 
-    /**
-     * GET /api/products/my-listings — Auth required: Seller's own products
-     */
-    @GetMapping("/my-listings")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getMyListings(
-            @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(ApiResponse.success(productService.getSellerProducts(user.getId())));
-    }
 }

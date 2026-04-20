@@ -46,15 +46,11 @@ public class OrderServiceTest {
         User buyer = new User();
         buyer.setId(1L);
 
-        User seller = new User();
-        seller.setId(2L);
-        seller.setDisplayName("Vegetable Vendor");
 
         Product mockProduct = new Product();
         mockProduct.setId(10L);
         mockProduct.setTitle("Tomato");
         mockProduct.setPrice(new BigDecimal("50.00"));
-        mockProduct.setSeller(seller);
 
         OrderItem mockItem = new OrderItem();
         mockItem.setId(100L);
@@ -63,7 +59,6 @@ public class OrderServiceTest {
         mockItem.setQuantity(2);
         mockItem.setUnitPrice(new BigDecimal("50.00"));
         mockItem.setTotalPrice(new BigDecimal("100.00"));
-        mockItem.setSellerName("Vegetable Vendor");
 
         Order mockOrder = new Order();
         mockOrder.setId(1000L);

@@ -13,7 +13,7 @@ To establish a robust and isolated testing environment, the following files were
 
 ### Created Test Classes
 - **`server/src/test/.../service/ProductServiceTest.java`**
-  Unit tests for the `ProductService`, verifying that product details can be fetched and mapped correctly to their DTOs (`ProductResponse`) alongside their respective seller details.
+  Unit tests for the `ProductService`, verifying that product details can be fetched and mapped correctly to their DTOs (`ProductResponse`)
   
 - **`server/src/test/.../service/CartServiceTest.java`**
   Unit tests for the `CartService`, validating operations like fetching an empty cart and ensuring amounts and totals are calculated accurately.

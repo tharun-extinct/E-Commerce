@@ -93,7 +93,7 @@ public class ProductService {
 
     @CacheEvict(value = {"products", "product-detail"}, allEntries = true)
     @Transactional
-    public ProductResponse createProduct(ProductRequest request, User seller) {
+    public ProductResponse createProduct(ProductRequest request) {
         Category category = null;
         if (request.getCategoryId() != null) {
             category = categoryRepository.findById(request.getCategoryId()).orElse(null);
@@ -107,32 +107,20 @@ public class ProductService {
                 .stockQuantity(request.getStockQuantity())
                 .city(request.getCity())
                 .pincode(request.getPincode())
-                .seller(seller)
                 .category(category)
                 .status(Product.Status.ACTIVE)
                 .build();
 
         product = productRepository.save(product);
-        log.info("Product created: {} by seller {}", product.getTitle(), seller.getDisplayName());
-
-        // Update seller role to SELLER if currently BUYER
-        if (seller.getRole() == User.Role.BUYER) {
-            seller.setRole(User.Role.SELLER);
-            userRepository.save(seller);
-        }
 
         return toResponse(product);
     }
 
     @CacheEvict(value = {"products", "product-detail"}, allEntries = true)
     @Transactional
-    public ProductResponse updateProductImage(Long productId, String imageUrl, User seller) {
+    public ProductResponse updateProductImage(Long productId, String imageUrl, User requester) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        if (!product.getSeller().getId().equals(seller.getId())) {
-            throw new RuntimeException("Not authorized to update this product");
-        }
 
         product.setImageUrl(imageUrl);
         product = productRepository.save(product);
@@ -140,8 +128,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductResponse> getSellerProducts(Long sellerId) {
-        return productRepository.findBySellerId(sellerId)
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAll()
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -160,8 +148,6 @@ public class ProductService {
                 .pincode(product.getPincode())
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-                .sellerName(product.getSeller().getDisplayName())
-                .sellerId(product.getSeller().getId())
                 .status(product.getStatus().name())
                 .createdAt(product.getCreatedAt() != null ? product.getCreatedAt().toString() : null)
                 .build();

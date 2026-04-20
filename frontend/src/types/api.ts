@@ -20,7 +20,7 @@ export type User = {
   displayName: string
   email: string
   photoUrl?: string
-  role: 'BUYER' | 'ADMIN' | 'SELLER' | string
+  role: 'BUYER' | 'ADMIN' | string
   active?: boolean
   city?: string
   pincode?: string
@@ -48,7 +48,6 @@ export type Product = {
   pincode: string
   imageUrl?: string
   categoryName?: string
-  sellerName?: string
   active?: boolean
   status?: 'ACTIVE' | 'SOLD_OUT' | 'EXPIRED' | 'REMOVED' | string
   createdAt?: string
@@ -59,7 +58,6 @@ export type CartItem = {
   productId: number
   productTitle: string
   productImage?: string
-  sellerName?: string
   quantity: number
   price: number
   subtotal: number
@@ -97,7 +95,6 @@ export type Order = {
 
 export type AdminStats = {
   totalUsers: number
-  totalSellers: number
   totalProducts: number
   activeProducts: number
   totalOrders: number
@@ -110,7 +107,7 @@ export type AdminUser = {
   displayName?: string
   email?: string
   phone?: string
-  role: 'BUYER' | 'ADMIN' | 'SELLER' | string
+  role: 'BUYER' | 'ADMIN' | string
   active: boolean
   phoneVerified: boolean
   emailVerified: boolean

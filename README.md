@@ -1,7 +1,7 @@
 ﻿# Fresh Greens
 
 Fresh Greens is a B2C e-commerce platform for fresh produce, built with Spring Boot.
-It supports buyer/seller journeys, Firebase-based authentication, cart + checkout, and Razorpay payments.
+It supports buyer journeys, Firebase-based authentication, cart + checkout, and Razorpay payments.
 
 ## Quick Visual
 
@@ -23,7 +23,7 @@ flowchart LR
 - Product listing, search, and category browsing
 - Buyer cart management and order placement
 - Razorpay order creation + payment verification
-- Seller listing management (create/update/delete)
+- Admin listing management (create/update/delete)
 - Admin APIs for stats, users, products, and orders
 - Redis/in-memory caching for fast reads
 
@@ -96,8 +96,3 @@ App URL: `http://localhost:8080`
 
 
 
-where are all the dependcies(AKA JAR file) in the POM.xml is stored in the Project folder?
-
-
-
-How does the `AppApplication.java` runs the combines and runs the modules as a application without any imports ? 

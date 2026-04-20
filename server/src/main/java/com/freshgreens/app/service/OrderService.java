@@ -104,7 +104,6 @@ public class OrderService {
                     .quantity(cartItem.getQuantity())
                     .unitPrice(cartItem.getUnitPrice())
                     .totalPrice(cartItem.getTotalPrice())
-                    .sellerName(cartItem.getProduct().getSeller().getDisplayName())
                     .build();
             order.addItem(orderItem);
         }
@@ -199,7 +198,6 @@ public class OrderService {
                 .quantity(item.getQuantity())
                 .unitPrice(item.getUnitPrice())
                 .totalPrice(item.getTotalPrice())
-                .sellerName(item.getSellerName())
                 .build()
         ).collect(Collectors.toList());
 

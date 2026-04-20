@@ -23,8 +23,6 @@ public class ProductResponse implements Serializable {
     private String pincode;
     private String categoryName;
     private Long categoryId;
-    private String sellerName;
-    private Long sellerId;
     private String status;
     private String createdAt;
 }

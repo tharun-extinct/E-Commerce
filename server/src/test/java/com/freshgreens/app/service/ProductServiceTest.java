@@ -32,13 +32,11 @@ public class ProductServiceTest {
         Product mockProduct = new Product();
         mockProduct.setId(1L);
         mockProduct.setTitle("Test Product");
-        mockProduct.setSeller(mockUser);
         
         when(productRepository.findById(1L)).thenReturn(Optional.of(mockProduct));
 
         ProductResponse result = productService.getProductById(1L);
         assertNotNull(result);
         assertEquals("Test Product", result.getTitle());
-        assertEquals("John Doe", result.getSellerName());
     }
 }

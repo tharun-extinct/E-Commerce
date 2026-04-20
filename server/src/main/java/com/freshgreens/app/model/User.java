@@ -68,6 +68,6 @@ public class User implements Serializable {
     // private LocalDateTime updatedAt;
 
     public enum Role {
-        BUYER, SELLER, ADMIN
+        BUYER, ADMIN
     }
 }

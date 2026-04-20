@@ -50,19 +50,6 @@ public class DataInitializer implements CommandLineRunner {
 
         log.info("Seeded {} categories.", 6);
 
-        // ── Demo seller ─────────────────────────────────────────
-        User seller = userRepository.findByFirebaseUid("SEED_DEMO_SELLER").orElseGet(() -> {
-            User u = new User();
-            u.setFirebaseUid("SEED_DEMO_SELLER");
-            u.setDisplayName("Fresh Greens Demo Store");
-            u.setEmail("demo@freshgreens.local");
-            u.setProvider("seed");
-            u.setCity("Chennai");
-            u.setPincode("600001");
-            u.setRole(User.Role.SELLER);
-            return userRepository.save(u);
-        });
-
         // ── Products ────────────────────────────────────────────
         List<Object[]> productData = List.of(
             // title, description, price, unit, stock, category, imageUrl
@@ -90,7 +77,7 @@ public class DataInitializer implements CommandLineRunner {
             p.setStockQuantity((int) pd[4]);
             p.setCategory((Category) pd[5]);
             p.setImageUrl((String) pd[6]);
-            p.setSeller(seller);
+            
             p.setCity("Chennai");
             p.setPincode("600001");
             p.setStatus(Product.Status.ACTIVE);

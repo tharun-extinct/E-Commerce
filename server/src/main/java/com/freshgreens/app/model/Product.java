@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products", indexes = {
-    @Index(name = "idx_product_seller", columnList = "seller_id"),
     @Index(name = "idx_product_category", columnList = "category_id"),
     @Index(name = "idx_product_city", columnList = "city"),
     @Index(name = "idx_product_status", columnList = "status")
@@ -49,9 +48,6 @@ public class Product {
     @Column(length = 10)
     private String pincode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id", nullable = false)
-    private User seller;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
