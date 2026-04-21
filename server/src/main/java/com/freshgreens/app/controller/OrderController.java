@@ -20,12 +20,14 @@ public class OrderController {
     private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 
     private final OrderService orderService;
+    private final com.freshgreens.app.service.UserService userService;
 
     @Value("${razorpay.key.id}")
     private String razorpayKeyId;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, com.freshgreens.app.service.UserService userService) {
         this.orderService = orderService;
+        this.userService = userService;
     }
 
     /**
@@ -36,14 +38,16 @@ public class OrderController {
             @Valid @RequestBody OrderRequest request,
             @AuthenticationPrincipal User user) {
 
+        User currentUser = userService.getUserById(user.getId());
+
         // Phone must be verified before initiating payment
-        if (!user.isPhoneVerified()) {
+        if (!currentUser.isPhoneVerified()) {
             return ResponseEntity.status(403).body(
                     ApiResponse.error("Please verify your phone number in Settings before placing an order."));
         }
 
         try {
-            OrderResponse order = orderService.createOrder(user, request);
+            OrderResponse order = orderService.createOrder(currentUser, request);
             return ResponseEntity.ok(ApiResponse.success("Order created", order));
         } catch (RazorpayException e) {
             log.error("Razorpay order creation failed: {}", e.getMessage());

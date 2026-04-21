@@ -71,7 +71,7 @@ public class AuthController {
             AuthResponse authResponse = authService.verifyAndLogin(request.getIdToken());
 
             // Load the full User entity so @AuthenticationPrincipal resolves to User
-            User user = userRepository.findById(authResponse.getUserId()).orElseThrow();
+            User user = userRepository.findById(authResponse.getId()).orElseThrow();
 
             // Create Spring Security Authentication with User as principal
             List<SimpleGrantedAuthority> authorities = List.of(
@@ -143,13 +143,19 @@ public class AuthController {
         }
 
         // Principal is the full User entity (set during login or by FirebaseTokenFilter)
-        if (auth.getPrincipal() instanceof User user) {
+        if (auth.getPrincipal() instanceof User cachedUser) {
+            User user = userRepository.findById(cachedUser.getId()).orElseThrow();
             AuthResponse resp = AuthResponse.builder()
-                    .userId(user.getId())
+                    .id(user.getId())
                     .displayName(user.getDisplayName())
                     .email(user.getEmail())
                     .photoUrl(user.getPhotoUrl())
                     .role(user.getRole().name())
+                    .phone(user.getPhone())
+                    .city(user.getCity())
+                    .pincode(user.getPincode())
+                    .emailVerified(user.isEmailVerified())
+                    .phoneVerified(user.isPhoneVerified())
                     .build();
             return ResponseEntity.ok(ApiResponse.success(resp));
         }

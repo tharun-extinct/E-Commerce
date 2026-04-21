@@ -74,12 +74,17 @@ public class AuthService {
         }
 
         return AuthResponse.builder()
-                .userId(user.getId())
+                .id(user.getId())
                 .displayName(user.getDisplayName())
                 .email(user.getEmail())
                 .photoUrl(user.getPhotoUrl())
                 .role(user.getRole().name())
                 .newUser(isNewUser)
+                .phone(user.getPhone())
+                .city(user.getCity())
+                .pincode(user.getPincode())
+                .emailVerified(user.isEmailVerified())
+                .phoneVerified(user.isPhoneVerified())
                 .build();
     }
 

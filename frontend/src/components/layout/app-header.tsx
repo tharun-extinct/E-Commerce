@@ -18,6 +18,7 @@ export const AppHeader = () => {
   const [draftCity, setDraftCity] = useState(location.city === 'All Cities' ? '' : location.city)
   const [draftPincode, setDraftPincode] = useState(location.pincode)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [imgError, setImgError] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Cart item count badge
@@ -50,6 +51,10 @@ export const AppHeader = () => {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
+  useEffect(() => {
+    setImgError(false)
+  }, [user?.photoUrl])
+
   const onSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const trimmedQuery = query.trim()
@@ -76,7 +81,7 @@ export const AppHeader = () => {
           {/* Brand */}
           <Link to="/" className="flex shrink-0 items-center gap-2 text-xl font-bold text-white">
             <span className="text-2xl">🥬</span>
-            <span>Fresh Greens</span>
+            <span className="text-white">Fresh Greens</span>
           </Link>
 
           {/* Search */}
@@ -152,12 +157,13 @@ export const AppHeader = () => {
                   onClick={() => setDropdownOpen((v) => !v)}
                   aria-label="User menu"
                 >
-                  {user?.photoUrl ? (
+                  {user?.photoUrl && !imgError ? (
                     <img
                       src={user.photoUrl}
                       alt={user.displayName || 'User'}
                       className="h-7 w-7 rounded-full border border-white/40 object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                      referrerPolicy="no-referrer"
+                      onError={() => setImgError(true)}
                     />
                   ) : (
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-sm font-bold">

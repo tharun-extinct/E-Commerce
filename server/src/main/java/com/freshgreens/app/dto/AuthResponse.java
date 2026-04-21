@@ -7,10 +7,15 @@ import lombok.*;
 @Builder
 public class AuthResponse {
 
-    private Long userId;
+    private Long id;
     private String displayName;
     private String email;
     private String photoUrl;
     private String role;
     private boolean newUser;
+    private String phone;
+    private String city;
+    private String pincode;
+    private boolean emailVerified;
+    private boolean phoneVerified;
 }

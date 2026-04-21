@@ -27,17 +27,18 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getProfile(
             @AuthenticationPrincipal User user) {
+        User currentUser = userService.getUserById(user.getId());
         Map<String, Object> profile = Map.of(
-                "id", user.getId(),
-                "displayName", user.getDisplayName() != null ? user.getDisplayName() : "",
-                "email", user.getEmail() != null ? user.getEmail() : "",
-                "phone", user.getPhone() != null ? user.getPhone() : "",
-                "photoUrl", user.getPhotoUrl() != null ? user.getPhotoUrl() : "",
-                "city", user.getCity() != null ? user.getCity() : "",
-                "pincode", user.getPincode() != null ? user.getPincode() : "",
-                "role", user.getRole().name(),
-                "emailVerified", user.isEmailVerified(),
-                "phoneVerified", user.isPhoneVerified()
+                "id", currentUser.getId(),
+                "displayName", currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "",
+                "email", currentUser.getEmail() != null ? currentUser.getEmail() : "",
+                "phone", currentUser.getPhone() != null ? currentUser.getPhone() : "",
+                "photoUrl", currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl() : "",
+                "city", currentUser.getCity() != null ? currentUser.getCity() : "",
+                "pincode", currentUser.getPincode() != null ? currentUser.getPincode() : "",
+                "role", currentUser.getRole().name(),
+                "emailVerified", currentUser.isEmailVerified(),
+                "phoneVerified", currentUser.isPhoneVerified()
         );
         return ResponseEntity.ok(ApiResponse.success(profile));
     }
