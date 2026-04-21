@@ -4,10 +4,9 @@ package com.freshgreens.app.config;
 // DataInitializer.java
 import com.freshgreens.app.model.Category;
 import com.freshgreens.app.model.Product;
-import com.freshgreens.app.model.User;
 import com.freshgreens.app.repository.CategoryRepository;
 import com.freshgreens.app.repository.ProductRepository;
-import com.freshgreens.app.repository.UserRepository;
+// import com.freshgreens.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -29,7 +28,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    // private final UserRepository userRepository;
 
     @Override
     public void run(String... args) {

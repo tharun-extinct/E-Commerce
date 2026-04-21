@@ -2,7 +2,6 @@ package com.freshgreens.app.controller;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,17 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.freshgreens.app.dto.ApiResponse;
 import com.freshgreens.app.model.Category;
-import com.freshgreens.app.repository.CategoryRepository;
+import com.freshgreens.app.service.CategoryService;
 
 
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    public CategoryController(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     /**
@@ -29,11 +28,6 @@ public class CategoryController {
     
     @GetMapping
     public ResponseEntity<ApiResponse<List<Category>>> getCategories() {
-        return ResponseEntity.ok(ApiResponse.success(getCategoriesCached()));
-    }
-
-    @Cacheable(value = "categories")
-    public List<Category> getCategoriesCached() {
-        return categoryRepository.findByActiveTrueOrderByDisplayOrderAsc();
+        return ResponseEntity.ok(ApiResponse.success(categoryService.getCategoriesCached()));
     }
 }

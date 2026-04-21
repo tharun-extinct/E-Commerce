@@ -4,14 +4,10 @@ import com.freshgreens.app.dto.ApiResponse;
 import com.freshgreens.app.dto.PageResponse;
 import com.freshgreens.app.dto.ProductRequest;
 import com.freshgreens.app.dto.ProductResponse;
-import com.freshgreens.app.model.User;
 import com.freshgreens.app.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")

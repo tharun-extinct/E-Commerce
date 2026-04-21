@@ -1,8 +1,7 @@
-package test.java.com.freshgreens.app.service;
+package com.freshgreens.app.service;
 
 import com.freshgreens.app.dto.OrderResponse;
 import com.freshgreens.app.model.*;
-import com.freshgreens.app.service.OrderService;
 import com.freshgreens.app.repository.CartRepository;
 import com.freshgreens.app.repository.OrderRepository;
 import com.freshgreens.app.repository.ProductRepository;

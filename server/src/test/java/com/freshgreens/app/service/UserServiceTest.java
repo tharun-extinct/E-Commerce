@@ -1,8 +1,8 @@
-package test.java.com.freshgreens.app.service;
+package com.freshgreens.app.service;
 
 import com.freshgreens.app.dto.UserUpdateRequest;
 import com.freshgreens.app.model.User;
-import com.freshgreens.app.service.UserService;
+// import com.freshgreens.app.service.UserService;
 import com.freshgreens.app.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

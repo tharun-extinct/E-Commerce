@@ -8,9 +8,6 @@ import com.freshgreens.app.model.Product;
 import com.freshgreens.app.model.User;
 import com.freshgreens.app.repository.CategoryRepository;
 import com.freshgreens.app.repository.ProductRepository;
-import com.freshgreens.app.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -24,18 +21,13 @@ import java.util.List;
 @Service
 public class ProductService {
 
-    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
-
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
 
     public ProductService(ProductRepository productRepository,
-                          CategoryRepository categoryRepository,
-                          UserRepository userRepository) {
+                          CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
     }
 
     @Cacheable(value = "products", key = "'page:' + #page + ':size:' + #size")

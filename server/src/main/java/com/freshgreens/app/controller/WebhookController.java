@@ -1,7 +1,6 @@
 package com.freshgreens.app.controller;
 
 import com.freshgreens.app.dto.ApiResponse;
-import com.freshgreens.app.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,12 +24,6 @@ public class WebhookController {
 
     @Value("${razorpay.webhook.secret}")
     private String webhookSecret;
-
-    private final OrderRepository orderRepository;
-
-    public WebhookController(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     @PostMapping("/razorpay")
     public ResponseEntity<ApiResponse<String>> handleRazorpayWebhook(

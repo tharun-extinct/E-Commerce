@@ -1,8 +1,7 @@
-package test.java.com.freshgreens.app.service;
+package com.freshgreens.app.service;
 
 import com.freshgreens.app.dto.ProductResponse;
 import com.freshgreens.app.model.Product;
-import com.freshgreens.app.service.ProductService;
 import com.freshgreens.app.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
